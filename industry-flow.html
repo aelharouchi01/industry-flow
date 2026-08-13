@@ -1,0 +1,1138 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How countries govern industrial competitiveness</title>
+
+<style>
+:root{
+  --ink:#121212; --muted:#4A4A4A; --faint:#767676;
+  --hair:#DFDFDF; --ground:#FFFFFF; --shade:#F1F1F1;
+  --accent:#003B48; --sage:#CEDAAA;
+  --font:Calibri,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1220px;margin:0 auto;padding:0 28px 96px}
+
+/* masthead */
+.masthead{border-bottom:1px solid var(--hair)}
+.masthead .wrap{padding-top:20px;padding-bottom:20px}
+.brand{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-weight:700;font-size:clamp(22px,2.8vw,29px);letter-spacing:-.012em;margin:7px 0 0}
+
+/* country tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0;list-style:none;border-bottom:1px solid var(--hair)}
+.tab{display:inline-flex;align-items:center;gap:10px;padding:16px 22px;background:none;border:0;
+  border-bottom:3px solid transparent;font-family:inherit;font-weight:600;font-size:17px;color:var(--muted);cursor:pointer}
+.tab:hover{color:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.tab[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
+.tab svg{display:block;border:1px solid var(--hair)}
+.tab .soon{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+
+/* country intro */
+.intro{margin:40px 0 34px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:44px;align-items:start}
+.hint{display:flex;align-items:center;gap:10px;margin:0 0 26px;font-size:16px;color:var(--muted)}
+.hint i{flex:none}
+.intro h2{font-weight:700;letter-spacing:-.018em;font-size:clamp(30px,4vw,42px);margin:0;line-height:1.04}
+.intro p{margin:0;font-size:18px;color:var(--muted);line-height:1.55}
+@media(max-width:800px){.intro{grid-template-columns:1fr;gap:16px}}
+
+/* ---------- diagram ---------- */
+.board{position:relative}
+.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.wires.top{z-index:4}
+
+.lanes,.layer{display:grid;grid-template-columns:154px minmax(0,1fr);gap:0 26px;align-items:start}
+.lanes{margin-bottom:4px}
+.layer + .lanes{margin-top:40px}
+.layer{margin-top:58px}
+.layer:first-of-type{margin-top:10px}
+.layer:last-of-type{padding-bottom:62px}
+.lane-h{position:relative;z-index:2;background:var(--ground);font-size:13px;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--faint);
+  padding:6px 0 9px;border-bottom:1px solid var(--hair)}
+
+.lhead{padding-top:3px}
+.lhead .num{font-size:13px;font-weight:700;color:var(--faint);letter-spacing:.12em}
+.lhead .nm{font-size:21px;font-weight:700;letter-spacing:-.014em;margin-top:2px;line-height:1.12}
+.lhead .note{font-size:14.5px;color:var(--muted);margin-top:5px;line-height:1.32}
+
+.row{display:grid;gap:0 22px;position:relative}
+
+.node{grid-row:1;min-width:0;background:var(--ground);border:1px solid var(--hair);border-radius:5px;
+  padding:15px 17px;min-height:88px;text-align:left;font-family:inherit;color:inherit;cursor:pointer;
+  overflow-wrap:break-word;
+  display:flex;flex-direction:column;justify-content:center;gap:5px;position:relative;
+  transition:border-color .12s,box-shadow .12s}
+.node:hover{border-color:var(--accent)}
+.node:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.node .nm{font-size:19px;font-weight:700;letter-spacing:-.012em;line-height:1.18}
+.node .role{font-size:15px;color:var(--muted);line-height:1.32}
+.node.mech{background:var(--shade);border-color:transparent}
+.node.shared{background:var(--shade)}
+.node.tri{box-shadow:inset 3px 0 0 var(--accent)}
+.node.mech .nm{font-weight:600}
+.node.detached{border-style:dashed}
+.node.opt{box-shadow:inset 0 3px 0 var(--sage)}
+.node.opt .role{color:var(--faint)}
+.node .rels{position:absolute;top:11px;right:12px;width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.5}
+.node[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.node.opt[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--accent),inset 0 3px 0 var(--sage)}
+.node.tri[aria-pressed="true"]{box-shadow:inset 0 0 0 1px var(--accent),inset 3px 0 0 var(--accent)}
+.node[aria-pressed="true"] .rels{opacity:1}
+.node.linked{border-color:var(--accent)}
+
+/* an empty layer, where the absence is the finding */
+.absent{grid-row:1;grid-column:1 / -1;border:1px dashed var(--hair);border-radius:5px;
+  padding:15px 18px;min-height:88px;display:flex;flex-direction:column;justify-content:center;gap:4px;
+  background:var(--ground)}
+.absent .nm{font-size:17px;font-weight:700;color:var(--faint)}
+.absent p{margin:0;font-size:15px;color:var(--muted);max-width:88ch;line-height:1.4}
+
+.wirelab{font-family:var(--font);font-size:13px;font-weight:600;fill:var(--accent);
+  paint-order:stroke;stroke:var(--ground);stroke-width:5px;stroke-linejoin:round}
+
+.legend{display:flex;flex-wrap:wrap;gap:26px;margin:34px 0 0;padding-top:16px;border-top:1px solid var(--hair);
+  font-size:14.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:9px}
+.key{width:26px;height:15px;border-radius:3px;border:1px solid var(--hair);background:var(--ground);flex:none}
+.key.mech{background:var(--shade);border-color:transparent}
+.key.shared{background:var(--shade)}
+.key.tri{box-shadow:inset 3px 0 0 var(--accent)}
+.key.opt{box-shadow:inset 0 3px 0 var(--sage)}
+.key.det{border-style:dashed}
+.key.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);border:0}
+
+/* ---------- disputed outcomes ---------- */
+.dispute{margin:36px 0 0;padding-top:22px;border-top:1px solid var(--hair)}
+.dispute h4{margin:0;font-size:13.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.dispute .cols{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:16px}
+.dispute .side b{display:block;font-size:16px;margin-bottom:5px}
+.dispute .side p{margin:0;font-size:15.5px;color:var(--muted);line-height:1.45}
+.dispute .foot{margin:18px 0 0;font-size:15.5px;color:var(--muted);max-width:96ch;line-height:1.45}
+@media(max-width:820px){.dispute .cols{grid-template-columns:1fr;gap:20px}}
+
+/* ---------- detail ---------- */
+.detail{margin-top:38px;padding-top:26px;border-top:2px solid var(--ink);min-height:150px}
+.detail .kicker{font-size:13.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.detail h3{font-weight:700;font-size:30px;letter-spacing:-.016em;margin:8px 0 0;line-height:1.12}
+.detail .lede{margin:11px 0 0;font-size:19px;max-width:74ch;line-height:1.45;color:var(--ink)}
+.detail dl{margin:26px 0 0;display:grid;grid-template-columns:230px minmax(0,1fr);gap:0}
+.detail dt{font-size:14px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);
+  padding:15px 26px 15px 0;border-top:1px solid var(--hair)}
+.detail dd{margin:0;font-size:17px;line-height:1.5;max-width:80ch;padding:15px 0;border-top:1px solid var(--hair)}
+.detail .idle{color:var(--muted);font-size:18px;margin:0;max-width:60ch}
+@media(max-width:820px){
+  .detail dl{grid-template-columns:1fr}
+  .detail dt{padding:14px 0 0;border-top:1px solid var(--hair)}
+  .detail dd{padding:4px 0 14px;border-top:0}
+}
+
+/* validator panel, only with ?check */
+#check{position:fixed;right:14px;bottom:14px;max-width:420px;max-height:52vh;overflow:auto;z-index:99;
+  background:var(--ground);border:1px solid var(--ink);border-radius:5px;padding:14px 16px;font-size:13.5px;
+  box-shadow:0 6px 26px rgba(0,0,0,.12)}
+#check b{display:block;margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+#check ul{margin:0;padding-left:17px}
+#check li{margin:3px 0;color:var(--muted)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="masthead"><div class="wrap">
+  <div class="brand">IXL Center</div>
+  <h1>How countries govern industrial competitiveness</h1>
+</div></header>
+
+<div class="wrap">
+  <ul class="tabs" role="tablist" id="tabs"></ul>
+  <main id="stage"></main>
+</div>
+
+<script>
+/* ============================================================================
+   ADDING A COUNTRY
+   ----------------------------------------------------------------------------
+   No pixel coordinates. Layout comes from the grid; connectors are measured
+   from the rendered boxes, so a country is pure data.
+
+   lanes  : [ {key:'gov', label:'Government', cols:3}, {key:'ind', ...} ]
+   lanesFrom : optional. Layers above this number run full width on gcol/gspan.
+   node   : { id, layer:1-6,
+              lane, col, span,          // inside a lane
+              gcol, gspan,              // on the full-width track
+              kind, name, role,         // role = 3 or 4 words, or the owner
+              detail:[ ['Label','Fact'], ... ] }
+   flow   : [ {from,to} ]               // solid, always drawn, downward only
+   rel    : [ {from,to,label,note} ]    // curved, only on selection
+   absent : { 6:'Why this layer is empty.' }   // renders the gap as a finding
+   dispute: { title, sides:[[label,text]], foot }
+
+   kind = 'body' | 'mechanism' | 'option' | 'detached' | 'shared' | 'tripartite'
+   'option' is layer 05 only: a route rather than a body. Its role line names
+   the body that owns the route.
+   ============================================================================ */
+
+const LAYERS=[
+ {num:'01',name:'Foresight',  note:'Studies what is coming. Advises only.'},
+ {num:'02',name:'Direction',  note:'Decides what to back.'},
+ {num:'03',name:'Translation',note:'Turns it into an offer.'},
+ {num:'04',name:'Delivery',   note:'Money, demand and support.'},
+ {num:'05',name:'Capability', note:'The routes for closing a gap.'},
+ {num:'06',name:'Ground',     note:'Land and permission.'}
+];
+
+const FLAGS={
+ brazil:`<svg width="26" height="18" viewBox="0 0 70 49"><rect width="70" height="49" fill="#009B3A"/><path d="M35 6 64 24.5 35 43 6 24.5Z" fill="#FEDF00"/><circle cx="35" cy="24.5" r="11" fill="#002776"/><path d="M25 21.5a13 13 0 0 0 20 0" stroke="#fff" stroke-width="2.6" fill="none"/></svg>`,
+ singapore:`<svg width="26" height="18" viewBox="0 0 72 48"><rect width="72" height="48" fill="#fff"/><rect width="72" height="24" fill="#ED2939"/><circle cx="14" cy="12" r="8" fill="#fff"/><circle cx="19" cy="12" r="7" fill="#ED2939"/><g fill="#fff"><circle cx="23" cy="7" r="1.6"/><circle cx="27" cy="10.5" r="1.6"/><circle cx="25.5" cy="16" r="1.6"/><circle cx="20.5" cy="16" r="1.6"/><circle cx="19" cy="10.5" r="1.6"/></g></svg>`,
+ uae:`<svg width="26" height="18" viewBox="0 0 72 36"><rect width="72" height="12" fill="#00732F"/><rect y="12" width="72" height="12" fill="#fff"/><rect y="24" width="72" height="12" fill="#000"/><rect width="18" height="36" fill="#FF0000"/></svg>`,
+ usa:`<svg width="26" height="18" viewBox="0 0 76 40"><rect width="76" height="40" fill="#fff"/><g fill="#B22234"><rect width="76" height="3.1"/><rect y="6.2" width="76" height="3.1"/><rect y="12.3" width="76" height="3.1"/><rect y="18.5" width="76" height="3.1"/><rect y="24.6" width="76" height="3.1"/><rect y="30.8" width="76" height="3.1"/><rect y="36.9" width="76" height="3.1"/></g><rect width="30.4" height="21.5" fill="#3C3B6E"/></svg>`
+};
+
+const COUNTRIES=[
+{
+ id:'brazil', name:'Brazil', flag:FLAGS.brazil,
+ sub:'Two complete systems run side by side. Government sets national missions. Industry runs its own strategy, funded by a charge on wages that no government can switch off.',
+ lanes:[{key:'gov',label:'Government',cols:3},{key:'ind',label:'Industry',cols:2}],
+ nodes:[
+  {id:'sci',layer:1,lane:'gov',col:1,span:2,kind:'detached',
+   name:'Science ministry',role:'Foresight that connects to nothing',
+   detail:[['The gap','Neither the science ministry nor planning holds a seat on the industrial council, so what they see never reaches the people setting missions.'],
+           ['Consequence','The government half of this chain runs with no forward looking input of its own.'],
+           ['Why it is drawn detached','Nothing flows out of this box. That absence is the finding.']]},
+  {id:'obs',layer:1,lane:'ind',col:1,span:2,kind:'body',
+   name:'Industry Observatory',role:'Projects the skills gap ahead',
+   detail:[['Owner','The confederation. A permanent in house unit, not a commissioned study.'],
+           ['Why it matters','The only body in this chain whose job is to look forward.'],
+           ['What it feeds','Industry’s ten year plan, and which institutes and courses get opened.']]},
+
+  {id:'cndi',layer:2,lane:'gov',col:1,span:2,kind:'body',
+   name:'CNDI',role:'Government council, sets missions',
+   detail:[['Full name','National Council for Industrial Development.'],
+           ['Created','2004. It then sat dormant for eight years and was revived in 2023.'],
+           ['Who chairs it','The Minister of Development, Industry, Trade and Services.'],
+           ['The six missions','Health, defence, digital, agriculture, bioeconomy and infrastructure. Each carries a 2023 baseline, a 2026 checkpoint and a 2033 target.'],
+           ['Its power','Its decisions become government policy and set what qualifies for subsidised state credit.'],
+           ['Its limit','It holds no budget, and it stops the moment a government stops convening it.']]},
+  {id:'cni',layer:2,lane:'ind',col:1,span:2,kind:'body',
+   name:'CNI',role:'Industry’s own confederation',
+   detail:[['Full name','National Confederation of Industry.'],
+           ['Founded','1938, by four state federations, and never interrupted since.'],
+           ['Why the date matters','Industry’s decision body is older than most government agencies it deals with, and has never been switched off.'],
+           ['Who owns it','The 27 state federations. It is a private body, not a public one.'],
+           ['What it sets','A plan targeting the conditions for competitiveness: tax, education and energy cost.'],
+           ['Its power','It directs about R$27 billion a year of its own money through the bodies it oversees.'],
+           ['Its limit','It can compel nobody. It directs its own system and lobbies government.']]},
+
+  {id:'credit',layer:3,lane:'gov',col:1,kind:'mechanism',
+   name:'Missions unlock credit',role:'The default route',
+   detail:[['Why this is not a body','No institution translates a mission into a sector plan. The mission itself becomes the eligibility rule.'],
+           ['How it works','The missions define what qualifies. State banks then lend against them.'],
+           ['What is missing','No sector roadmap is written. Nothing tells any industry what to do.'],
+           ['Scale','This route carries most of the money.']]},
+  {id:'prog',layer:3,lane:'gov',col:2,kind:'mechanism',
+   name:'Custom programmes',role:'Built one at a time',
+   detail:[['Why this is not a body','Each programme is assembled from scratch, then dissolved into the agencies that run it.'],
+           ['How often','Twice at scale: one for factory productivity, one for automotive research.'],
+           ['Coordination by assignment','The productivity programme gives each body a role. A ministry coordinates, the training system delivers shop floor work, the funders pay. About 67,500 companies supported.'],
+           ['Coordination by rule','The automotive programme writes it into the funding conditions: five or more carmakers, one accredited research centre, one industry institute as coordinator.']]},
+  {id:'mei',layer:3,lane:'ind',col:1,kind:'body',
+   name:'MEI',role:'Platform of chief executives',
+   detail:[['Full name','Business Mobilization for Innovation.'],
+           ['Founded','2008, by the confederation.'],
+           ['Who is in the room','Around 200 to 300 of the largest companies in Brazil, represented by their chief executives or board members, sitting on a Business Leaders Committee.'],
+           ['What it actually is','A movement, not a legal entity. No budget, almost no staff. Its power is that the people in the room run the companies.'],
+           ['How a gap gets closed','The observatory finds it, this committee decides it matters, the confederation points its money at it, the institutes deliver it.'],
+           ['What it has built','It backed the creation of the SENAI Technology Institutes network.'],
+           ['What it changed in law','It defended the 2005 research tax incentive from suspension, and backed the 2021 law that stopped the Treasury blocking the national science fund, which is the fund FINEP depends on.']]},
+  {id:'feds',layer:3,lane:'ind',col:2,kind:'body',
+   name:'The federations',role:'Political force, not delivery',
+   detail:[['What they are','27 state federations, such as FIESP in Sao Paulo, plus about 1,350 employer unions, representing roughly one million companies.'],
+           ['Their age','The structure dates from the 1930s. FIESP was founded in 1931, before the national confederation existed.'],
+           ['What they do','Represent members and apply political pressure. They own the confederation above them.'],
+           ['What they do not do','No training, no research, no services. That is the job of the institutes their system owns.'],
+           ['The 2017 break','A labour reform made their dues voluntary. Their money became optional at the same moment the delivery arm’s payroll charge stayed compulsory.'],
+           ['No line to government','Neither the federations, the unions nor the million companies connect directly to the government side. Everything routes through the confederation.']]},
+
+  {id:'bndes',layer:4,lane:'gov',col:1,kind:'body',
+   name:'BNDES',role:'The development bank',
+   detail:[['Created','1952.'],
+           ['Where its money comes from','A national workers support fund supplies about half its resources.'],
+           ['Scale','R$653 billion approved across 428,000 projects in two years.'],
+           ['A second role','It lent the money that originally built industry’s own training institutes.']]},
+  {id:'finep',layer:4,lane:'gov',col:2,kind:'body',
+   name:'FINEP',role:'The innovation agency',
+   detail:[['Created','1967.'],
+           ['Where its money comes from','A science fund filled by levies on oil, energy and mining royalties.'],
+           ['The vulnerability','That money was legally earmarked yet withheld by the Treasury for years, until a 2021 law stopped the practice.']]},
+  {id:'embr',layer:4,lane:'gov',col:3,kind:'body',
+   name:'EMBRAPII',role:'Research agency, co-funds work',
+   detail:[['Created','2013, after industry lobbied for it.'],
+           ['How it is funded','A ministry contract, plus money the company itself puts in.'],
+           ['Who steers it','Industry holds seats on its board, so a public agency is partly directed by the private side.']]},
+
+  {id:'cofund',layer:5,lane:'gov',col:1,kind:'option',
+   name:'Co-fund company research',role:'Applied research agency',
+   detail:[['Owner','EMBRAPII, the public agency one row above.'],
+           ['How the route works','A ministry contract plus money the company itself puts in, so a firm pays for part of its own answer.'],
+           ['Who steers it','Industry lobbied it into existence in 2013 and holds board seats, so a public route is partly directed by the private side.'],
+           ['What it closes','A know how gap inside one company, project by project. It builds no standing capacity.']]},
+  {id:'loan',layer:5,lane:'gov',col:2,kind:'option',
+   name:'Lend against a mission',role:'Development bank',
+   detail:[['Owner','BNDES, created 1952.'],
+           ['How the route works','The missions define what qualifies, and the bank lends against them. Nothing else has to be written.'],
+           ['Scale','R$653 billion approved across 428,000 projects in two years. Roughly half its resources come from a national workers support fund.'],
+           ['What it does not close','This route closes a money gap. Nobody is trained by a loan, which is why the government side of this row is thinner than it looks.']]},
+  {id:'train',layer:5,lane:'ind',col:1,kind:'option',
+   name:'Train through the levy',role:'Industry institutes',
+   detail:[['Owner','SENAI, SESI and IEL. Set up by law from 1942, then handed to industry to run. Private bodies carrying out a public task.'],
+           ['How it is funded','A compulsory charge every company pays on its payroll: 1.5% for worker welfare and 1.0% for training.'],
+           ['Why it is stable','It needs no annual budget approval, so it does not stop when a government changes.'],
+           ['The proof','It survived the 2017 reform that made federation dues voluntary, because it rests on a different legal basis. The lobbying side was defunded and the execution side was not.'],
+           ['Scale','3.3 million training places a year and 114,000 internships placed.'],
+           ['Why it sits on this side','This is the only route on the row that creates a skill, and industry owns it.']]},
+  {id:'newinst',layer:5,lane:'ind',col:2,kind:'option',
+   name:'Build a new institute',role:'Industry lobbies for it',
+   detail:[['Owner','Nobody standing. The confederation asks government to create a new instrument.'],
+           ['When it is used','When a gap is too large for industry to close alone.'],
+           ['What it has produced','This is how the applied research agency on the government side came to exist, in 2013.'],
+           ['Its limit','It depends on a government willing to create something, so it is the slowest route on the page and the only one with no owner of its own.']]}
+ ],
+ flow:[
+  {from:'obs',to:'cni'},
+  {from:'cndi',to:'credit'},{from:'cndi',to:'prog'},
+  {from:'cni',to:'mei'},{from:'cni',to:'feds'},
+  {from:'credit',to:'bndes'},{from:'credit',to:'finep'},
+  {from:'prog',to:'bndes'},{from:'prog',to:'finep'},{from:'prog',to:'embr'},
+  {from:'bndes',to:'loan'},{from:'embr',to:'cofund'},
+  {from:'mei',to:'train'},{from:'mei',to:'newinst'}
+ ],
+ rel:[
+  {from:'cni',to:'cndi',label:'holds a voting seat',
+   note:'CNI holds a voting seat on CNDI, so industry argues its case inside the government decision rather than from outside it.'},
+  {from:'feds',to:'cni',label:'they own it',
+   note:'The 27 state federations own CNI. Industry’s direction body is owned from below by its members, which is the opposite of how the government side is directed.'},
+  {from:'cni',to:'embr',label:'lobbied it into being',
+   note:'CNI lobbied EMBRAPII into existence in 2013 and holds seats on its board, so a public agency is partly steered by the private side.'},
+  {from:'mei',to:'finep',label:'unblocked its fund',
+   note:'MEI backed the 2021 law that stopped the Treasury withholding the science fund FINEP draws on. Industry protected a government agency’s money.'},
+  {from:'bndes',to:'train',label:'public money spent inside',
+   note:'BNDES, FINEP and EMBRAPII all place public money inside the private institutes, so public and private funding mix at the point where the training actually happens.'},
+  {from:'finep',to:'train',label:'public money spent inside'},
+  {from:'embr',to:'train',label:'public money spent inside'}
+ ]
+},
+{
+ id:'singapore', name:'Singapore', flag:FLAGS.singapore,
+ sub:'One chain, no separate towers. What is unusual is that government, business and unions sit inside the same bodies rather than beside them, and that a sector plan is traced all the way down into named job roles and funded retraining.',
+ lanes:[{key:'one',label:'One chain, all parties inside it',cols:4}],
+ nodes:[
+  {id:'csf',layer:1,lane:'one',col:1,span:2,kind:'body',
+   name:'Strategic Futures centre',role:'Permanent, never closes',
+   detail:[['Its full name','The Centre for Strategic Futures.'],
+           ['Where it sits','A think tank and foresight unit inside the Strategy Group of the Prime Minister’s Office.'],
+           ['Why it is unusual','It is a standing institution whose job is to look ahead. Neither of the other countries mapped here has an equivalent inside government.']]},
+  {id:'review',layer:1,lane:'one',col:3,span:2,kind:'tripartite',
+   name:'Economic review',role:'Convened, reports, closes',
+   detail:[['What it is','A major review of economic strategy, convened roughly every seven years and then dissolved.'],
+           ['The sequence','An Economic Strategies Committee reported in 2010. A Committee on the Future Economy ran from January 2016 to February 2017. An Economic Strategy Review ran from August 2025 and reported in May 2026.'],
+           ['Who sits on it','Five committees, each co-chaired by two political office holders, with members from the private sector and unions. One committee was co-chaired by a deputy secretary-general of the union congress.'],
+           ['How wide it consults','More than 80 engagements with trade associations, chambers, unions, businesses and workers, reaching over 7,700 stakeholders.'],
+           ['What it produced','32 recommendations across eight thrusts, presented in May 2026 at the business federation’s conference.'],
+           ['A caution on currency','Those recommendations are still working through the system. A National AI Council has already been created from them.']]},
+
+  {id:'cabinet',layer:2,lane:'one',col:1,span:2,kind:'body',
+   name:'Cabinet',role:'Funds it in the Budget',
+   detail:[['What it does','Accepts the review’s recommendations and turns them into funded commitments.'],
+           ['Why the Budget is the hinge','Nothing becomes real until it has a Budget line and a named owner. This year’s trade ministry estimates list the specific initiatives that came out of the review, including an AI leadership programme, sector AI missions and an AI park.'],
+           ['Who leads','The review was led by the Deputy Prime Minister, who is also Minister for Trade and Industry, so the person running the review runs the ministry that implements it.']]},
+  {id:'fec',layer:2,lane:'one',col:3,span:2,kind:'tripartite',
+   name:'Future Economy Council',role:'Standing body, owns it',
+   detail:[['Created','2017, chaired by the Deputy Prime Minister.'],
+           ['Its stated job','Grow an open economy where trade associations and chambers, unions, enterprises and individuals come together; strengthen enterprises through industry-specific approaches; and help Singaporeans acquire deep skills.'],
+           ['How it is organised','Seven clusters, aligned to the national research plan.'],
+           ['Why it matters','A big review sets direction every several years. This council carries it in between, which is why direction does not lapse.']]},
+
+  {id:'clusters',layer:3,lane:'one',col:1,span:2,kind:'tripartite',
+   name:'The seven clusters',role:'Co-chaired by both sides',
+   detail:[['How they are chaired','Each cluster is co-chaired by a political office holder and a private-sector figure. The advanced manufacturing cluster was co-chaired by a minister of state and a chipmaker’s Singapore country manager.'],
+           ['What they group','The 23 sectors, sorted into seven clusters aligned to the national research plan so that research money and industry needs line up.']]},
+  {id:'leads',layer:3,lane:'one',col:3,span:2,kind:'tripartite',
+   name:'Sector lead agencies',role:'One for each of 23 sectors',
+   detail:[['The principle','Each sector roadmap has exactly one lead agency. There is no super-agency running everything.'],
+           ['Who leads what','The monetary authority owns financial services. The civil aviation authority owns air transport. The investment board owns electronics and precision engineering. The enterprise agency owns hotels, food services and retail.'],
+           ['What they produce','23 Industry Transformation Maps covering about 80 per cent of the economy, each co-created by government, industry stakeholders and unions.'],
+           ['What each roadmap covers','Productivity, internationalisation, innovation, digitalisation, resilience, sustainability, and jobs and skills.'],
+           ['A known blur','The same agency often writes a roadmap and then delivers it, and the monetary authority writes the financial services roadmap while regulating the sector. Translation and delivery are genuinely less separable here than in Brazil or the Emirates.']]},
+
+  {id:'edb',layer:4,lane:'one',col:1,kind:'tripartite',
+   name:'Investment board',role:'Attracts investment',
+   detail:[['Its full name','The Economic Development Board.'],
+           ['What it does','Attracts foreign investment and multinationals, and leads the roadmaps for the sectors where that is the main lever. It is not a whole-economy function.'],
+           ['The tripartite proof','A union assistant secretary-general, who also runs the union employment institute, sits on its board. A union officer is formally seated on the body whose job is attracting global capital.']]},
+  {id:'esg',layer:4,lane:'one',col:2,kind:'tripartite',
+   name:'Enterprise agency',role:'Grows local firms',
+   detail:[['Its full name','Enterprise Singapore.'],
+           ['What it does','Helps local companies grow, innovate and expand abroad, and leads roadmaps for domestically oriented sectors.'],
+           ['Its board too','The same union officer sits on this board as well.'],
+           ['What it funds','The network of innovation centres that the shared facility route below draws on.']]},
+  {id:'astar',layer:4,lane:'one',col:3,kind:'body',
+   name:'Research agency',role:'Does the science',
+   detail:[['Its full name','The Agency for Science, Technology and Research.'],
+           ['Scale of the base','Singapore has invested about 60 billion Singapore dollars in research over twenty years, and over 50 research institutes and higher learning institutes are open to industry collaboration.'],
+           ['How it reaches companies','Through joint labs with named firms, technology transfer, and an operational and technology roadmap service that helps a single company work out which capability it is missing.']]},
+  {id:'e2i',layer:4,lane:'one',col:4,kind:'body',
+   name:'Union institute',role:'Places and retrains',
+   detail:[['Its full name','The Employment and Employability Institute, owned by the union congress.'],
+           ['Formed','2008.'],
+           ['What it does','Job matching, career guidance and skills upgrading for workers, and work with employers on recruitment, training and job redesign.'],
+           ['Why it belongs on this row','This is a delivery body owned by the labour movement, not a lobbying body. The unions run their own placement and retraining arm alongside the government agencies.'],
+           ['Why nothing flows into it','It takes no instruction from the chain above. Its link to the rest of the map is a seat on two boards, which is drawn as a relationship.']]},
+
+  {id:'retrain',layer:5,lane:'one',col:1,kind:'option',
+   name:'Retrain into a new role',role:'Skills and jobs agencies',
+   detail:[['Owners','SkillsFuture Singapore writes the framework. Workforce Singapore, under the manpower ministry, funds the move.'],
+           ['First, the jobs are named','A Jobs Transformation Map per sector identifies growth jobs, meaning emerging roles with long-term progression, derived from that sector’s transformation trends.'],
+           ['Then the skills are listed','A Skills Framework sets out career pathways, existing and emerging skills and the actual courses that teach them, across more than 130 job roles.'],
+           ['Then the move is paid for','Career Conversion Programmes reskill mid-career people into those growth jobs, with up to 90 per cent salary support.'],
+           ['Why this is the tightest chain of the four','A company can trace one line from sector plan, to named growth job, to required skills, to 90 per cent of a salary while it retrains someone into the role.'],
+           ['Where the framework comes from','It is not bolted on afterwards. It is an integral component of the sector roadmap itself, so the skills answer is derived from the plan rather than guessed at later.']]},
+  {id:'redesign',layer:5,lane:'one',col:2,kind:'option',
+   name:'Redesign the job',role:'Jobs agency',
+   detail:[['Owner','Workforce Singapore.'],
+           ['What it funds','From 2026 a workforce transformation package funds job redesign, pre-approved consultants, and training for human resource teams and line managers.'],
+           ['Why it is a separate route','Sometimes the gap is not in the worker. It is in how the work is arranged, and no amount of training fixes that.'],
+           ['A caution on currency','This package is new. Its terms should be checked against the current agency pages before use with a client.']]},
+  {id:'facility',layer:5,lane:'one',col:3,kind:'option',
+   name:'Use a shared facility',role:'Enterprise and research agencies',
+   detail:[['Why the route exists','A small firm cannot buy the equipment or hire the specialists alone, so the capability is pooled and shared.'],
+           ['Innovation centres','Hosted at the polytechnics and the national manufacturing institute, co-developing robotics and autonomous systems, data science, artificial intelligence and additive manufacturing.'],
+           ['The remanufacturing centre','A public-private platform with a university partner, sited in an industrial park, with a consortium of over 95 members from multinationals to startups across five industry pillars.'],
+           ['The model factory','A learning factory where companies can experience and experiment with advanced manufacturing before committing to it.'],
+           ['National programmes','Shared programme offices for robotics, additive manufacturing and manufacturing artificial intelligence.']]},
+  {id:'joint',layer:5,lane:'one',col:4,kind:'option',
+   name:'Open a joint lab',role:'Research agency',
+   detail:[['What it is','A laboratory set up with a named company to solve that company’s problem, with the results spreading to its suppliers.'],
+           ['The worked example','A smart manufacturing joint lab set up in 2017 with an engine maker and an engine services firm deployed 18 technologies, delivered over 20 per cent productivity gains, engaged more than 200 local small firms and qualified eight of them as approved vendors.'],
+           ['Finding the gap first','The agency runs an operational and technology roadmap service that helps one company work out which capability it is actually missing.'],
+           ['Why it is a route and not a body','Each lab is created for a partner and closes when the work is done.']]},
+
+  {id:'jtc',layer:6,lane:'one',col:1,span:4,kind:'body',
+   name:'Industrial land agency',role:'Holds most of the land',
+   detail:[['Its full name','JTC Corporation.'],
+           ['What it holds','It is the lead agency for industrial infrastructure and manages around 86 per cent of Singapore’s industrial land.'],
+           ['Why this row is short','There is one national land agency and no jurisdictional split, so land is a single decision rather than a negotiation.'],
+           ['What it also builds','Specialised parks and innovation districts, including the industrial park that houses the shared remanufacturing centre above.']]}
+ ],
+ flow:[
+  {from:'csf',to:'cabinet'},{from:'review',to:'cabinet'},
+  {from:'cabinet',to:'fec'},
+  {from:'fec',to:'clusters'},{from:'fec',to:'leads'},
+  {from:'leads',to:'edb'},{from:'leads',to:'esg'},{from:'leads',to:'astar'},
+  {from:'leads',to:'retrain'},{from:'leads',to:'redesign'},
+  {from:'esg',to:'facility'},{from:'astar',to:'facility'},{from:'astar',to:'joint'},
+  {from:'facility',to:'jtc'}
+ ],
+ rel:[
+  {from:'e2i',to:'edb',label:'a union officer sits here',
+   note:'A union assistant secretary-general, who also runs this institute, sits on the boards of both the investment board and the enterprise agency. That is the sharpest evidence that the three parties sit inside the same bodies rather than negotiating across a table.'},
+  {from:'e2i',to:'esg',label:'a union officer sits here'},
+  {from:'retrain',to:'leads',label:'the framework is part of the plan',
+   note:'The skills framework is not a separate document bolted on afterwards. It is an integral component of the sector roadmap, so the skills answer is derived from the sector plan rather than guessed at later.'},
+  {from:'review',to:'fec',label:'sets the next direction',
+   note:'A major review runs roughly every seven years and then closes. The standing council carries its direction in between, which is why Singapore has continuous direction without a permanent strategy committee.'}
+ ]
+},
+{
+ id:'uae', name:'United Arab Emirates', flag:FLAGS.uae,
+ sub:'One target is chosen for the whole country, then the tools divide. Industries that already exist are grown by guaranteeing them a customer. Industries that barely exist are grown by funding research and buying companies. Both still need land and a licence from an emirate.',
+ lanesFrom:3,
+ lanes:[{key:'have',label:'Sectors that already exist',cols:3},{key:'new',label:'Sectors that barely exist yet',cols:2}],
+ nodes:[
+  {id:'pmo',layer:1,gcol:1,gspan:2,kind:'body',
+   name:'Prime Minister’s Office',role:'Holds the long term vision',
+   detail:[['Where it sits','Inside the Ministry of Cabinet Affairs, which also contains the national statistics centre.'],
+           ['What it owns','UAE Centennial 2071, the fifty year national plan the industrial target had to fit inside.'],
+           ['Where that came from','A 2017 lecture by Sheikh Mohamed bin Zayed, later launched as a plan by Sheikh Mohammed bin Rashid.'],
+           ['What it did not supply','Any study of the industrial sector. It supplied the frame, not the number.']]},
+  {id:'unido',layer:1,gcol:3,gspan:1,kind:'body',
+   name:'UN industrial agency',role:'Ranks countries on industry',
+   detail:[['Its full name','The United Nations Industrial Development Organization, known as UNIDO.'],
+           ['What it supplied','Its Competitive Industrial Performance index. The UAE ranked 35th and set a goal of 25th.'],
+           ['Progress since','The UAE reached 29th in the 2023 report and 27th after that, first among Arab countries.'],
+           ['Why it matters','This is the only input to the target from outside the country, and the only one with no stake in the result.']]},
+
+  {id:'apex',layer:2,gcol:1,gspan:3,kind:'body',
+   name:'President and Prime Minister',role:'Choose the national target',
+   detail:[['Who they are','The Ruler of Abu Dhabi holds the presidency. The Ruler of Dubai is Vice President and Prime Minister.'],
+           ['What they chose','In 2021, raising industry from AED 133 billion to AED 300 billion of national output by 2031.'],
+           ['Why two and not seven','A council of all seven rulers is the constitutional apex, but it ratifies rather than initiates. These two announced this.'],
+           ['What they did not choose','No sectors, no programmes and no money. Only the number and the direction.'],
+           ['Who checked the number','Nobody independent. The three inputs were the rulers’ own long term vision, an external ranking, and the ministry that would be measured against it.'],
+           ['A note on dating','The ministry’s own release and later reporting give different launch dates in 2021, so the month is best treated as unsettled.']]},
+  {id:'adec',layer:2,gcol:5,gspan:2,kind:'body',
+   name:'Abu Dhabi Executive Council',role:'Chooses its own targets',
+   detail:[['Who chairs it','The Crown Prince of Abu Dhabi, son of the President.'],
+           ['For existing industry','It approved the Abu Dhabi Industrial Strategy in 2022: AED 10 billion of the emirate’s own money to more than double manufacturing to AED 172 billion by 2031, with 13,600 skilled jobs and non-oil exports up to AED 178.8 billion.'],
+           ['For new industry','The same council chairs the research council that runs the right hand side of this diagram.'],
+           ['Why it can do this','Under the constitution the emirates hold every power not given to the federation, and each emirate owns the natural wealth within it. Abu Dhabi therefore has both the authority and the money.'],
+           ['The arithmetic','Its AED 172 billion is most of the national AED 300 billion. Abu Dhabi already makes up over half of UAE industrial output.']]},
+
+  {id:'cabinet',layer:3,lane:'have',col:1,kind:'body',
+   name:'Federal Cabinet',role:'Makes it law',
+   detail:[['What only it can do','Issue a binding federal law, change an import tariff, or grant a customs exemption. No ministry can do these.'],
+           ['The main law','Federal Decree-Law 25 of 2022 on regulating and developing industry, with executive regulations in 2023. It created the compulsory industrial register.'],
+           ['Examples of decisions','Creating the Industry Development Council in December 2021, raising steel import duties from 5% to 10% for three years, and exempting imported inputs that cannot be made locally.'],
+           ['Who chairs it','The Prime Minister, who is also one of the two who chose the target.'],
+           ['How it relates to the ministry','The ministry proposes, the Cabinet enacts. The customs exemption policy, for instance, was proposed by the ministry and approved by the Cabinet.']]},
+  {id:'ministry',layer:3,lane:'have',col:2,kind:'body',
+   name:'Industry ministry',role:'Designs the instruments',
+   detail:[['Its full name','The Ministry of Industry and Advanced Technology, often shortened to MoIAT.'],
+           ['Created','July 2020, by merging the advanced technology office, the standards authority and the industrial arm of the energy ministry. All their powers transferred to it.'],
+           ['Who runs it','Sultan Al Jaber, who is also chief executive of ADNOC, the national oil company, and chairman of the federal development bank. His deputy previously ran ADNOC’s local content directorate.'],
+           ['What it designs','The list of priority sectors, the published list of products to make locally, the local content scoring formula, a factory maturity assessment, and the annual Make it in the Emirates event.'],
+           ['The product list today','More than 5,000 products worth about AED 180 billion of forecast demand, of which AED 81.5 billion has been filled.'],
+           ['When the intelligence arrived','The registry and the forecasting apparatus were built from 2022, after the target. The compulsory register came a year after the number existed.'],
+           ['What it cannot do','Pass a law, grant land, issue a licence, or spend an emirate’s money.']]},
+  {id:'council',layer:3,lane:'have',col:3,kind:'body',
+   name:'Industry Development Council',role:'Gets the emirates to agree',
+   detail:[['Created','Approved by the Cabinet in December 2021, nine months after the strategy it serves. It set its own mandate at its first meeting.'],
+           ['Who sits on it','Sixteen seats: federal ministries, the statistics centre, customs, the economic departments of six emirates, the federal development bank, the defence procurement body, and one seat for the chambers of commerce.'],
+           ['Who chairs it','The industry minister, with the foreign trade minister as deputy.'],
+           ['What it agrees','One industrial law across all seven emirates, tariff changes, customs exemptions, and persuading emirates to adopt federal schemes.'],
+           ['Why it is needed','No emirate is obliged to join a federal programme. Ras Al Khaimah and Fujairah adopting the local content scheme was a council outcome, not a legal requirement.']]},
+  {id:'adrc',layer:3,lane:'new',col:1,span:2,kind:'body',
+   name:'Abu Dhabi research council',role:'Picks the technologies',
+   detail:[['Its full name','The Advanced Technology Research Council, known as ATRC.'],
+           ['Who chairs it','The Crown Prince of Abu Dhabi, the same person who chairs the Executive Council.'],
+           ['Its six areas','Aerospace and space, food and agriculture, healthcare, safety and security, sustainability and energy, and transport.'],
+           ['Why it exists here','For a sector nobody buys from yet, there is no demand to publish and no tender to score. Somebody has to simply choose, and this is the body that does.'],
+           ['What it is not','It is not federal, and it has no national mandate. It belongs to one emirate.']]},
+
+  {id:'bank',layer:4,lane:'have',col:1,kind:'body',
+   name:'Federal development bank',role:'Lends so it gets built',
+   detail:[['Its full name','Emirates Development Bank.'],
+           ['Its mandate','AED 30 billion over five years to finance 13,500 small and medium manufacturers in priority sectors.'],
+           ['What lending means here','The company borrows, builds and repays, and stays independently owned. This closes a money gap, not a skills gap.'],
+           ['Who chairs it','The industry minister, so the body designing the lists also chairs the bank funding them.']]},
+  {id:'buyers',layer:4,lane:'have',col:2,kind:'body',
+   name:'Government-owned buyers',role:'Promise to buy the output',
+   detail:[['Who they are','Large companies owned by the state or by an emirate: ADNOC in oil and gas, TAQA in utilities, EDGE in defence, Masdar in renewables, Emaar in property, ENEC in nuclear, and roughly twenty more.'],
+           ['What they sign','Long term purchase contracts. At the 2026 event, twelve of these companies committed close to AED 100 billion of future purchases, and separate supply contracts of five to twenty-five years totalled about AED 105 billion.'],
+           ['A worked example','A chemicals producer agreed to supply 200,000 tonnes a year of caustic soda to a domestic aluminium refinery, replacing an import.'],
+           ['Their second act','They apply the local content score inside their own tender evaluations, so a domestic supplier beats an importer. The formula is the ministry’s, but it only bites because these companies enforce it when buying.'],
+           ['Their third act','They hand the ministry their ten year purchase forecasts, which is what the published product list is built from.'],
+           ['Why the federal toolkit stops here','Every federal instrument needs an existing purchase. That is why it cannot serve the right hand lane.']]},
+  {id:'funds',layer:4,lane:'new',col:2,kind:'body',
+   name:'Abu Dhabi sovereign funds',role:'Own the capability',
+   detail:[['Who they are','Mubadala and ADQ, investment companies owned by Abu Dhabi and funded from the emirate’s own resource wealth.'],
+           ['How they source capability','By purchase rather than persuasion.'],
+           ['Why they are not under the research council','They are separate investment vehicles answering to the Executive Council, not research bodies.']]},
+
+  {id:'place',layer:5,lane:'have',col:1,kind:'option',
+   name:'Place and train Emiratis',role:'Jobs programme',
+   detail:[['Owner','Nafis, run by the Emirati Talent Competitiveness Council.'],
+           ['Why this route works on this side','The employer already exists, so a person can be placed into a working factory and trained on the job or through short courses bought from providers.'],
+           ['Who builds the courses','The Industrialists Programme, run with the industry ministry and the labour ministry, assembles training with industrial companies and specialised training centres.'],
+           ['Why employers want it','The local content score counts Emirati salaries for more than expatriate ones, so hiring Emiratis raises a supplier’s tender score.'],
+           ['Its limit','The programme funds and places rather than teaching. It owns no institutes, so it cannot create a skill that nobody in the country already practises.']]},
+  {id:'attract',layer:5,lane:'have',col:2,kind:'option',
+   name:'Attract the firm that has it',role:'Industry ministry and zones',
+   detail:[['How the capability arrives','Inside a foreign company, rather than being built by anyone here.'],
+           ['What is offered','A guaranteed purchase from the state-owned buyers above, plus land and utilities from an industrial zone.'],
+           ['A worked example','A AED 700 million pharmaceutical plant agreed in 2026: the company led the technical and regulatory work, the zone operator supplied land, infrastructure and utilities.'],
+           ['What it does not do','The know how stays with the firm that brought it. This route rents a capability rather than creating one.']]},
+  {id:'specialists',layer:5,lane:'have',col:3,kind:'option',
+   name:'Bring in specialists',role:'Federal government',
+   detail:[['What it is','Long term visas for scientists, engineers and other specialists.'],
+           ['Why it sits between the two lanes','It serves both. On the left it fills a role no Emirati has trained for yet. On the right it substitutes for training entirely, because there is no employer to learn inside.'],
+           ['Its limit','A visa moves a person. It does not build a training system, and the capability leaves when the person does.']]},
+  {id:'research',layer:5,lane:'new',col:1,kind:'option',
+   name:'Fund a research institute',role:'Abu Dhabi research council',
+   detail:[['Owner','The Technology Innovation Institute, the applied research arm of the research council above.'],
+           ['What it covers','Artificial intelligence, quantum computing, cryptography, autonomous robotics, directed energy, advanced materials, propulsion and space, and biotechnology.'],
+           ['How it gets started','By renting access while learning. It has agreements giving its researchers use of IonQ’s Aria quantum computer and, from 2025, Quantinuum’s systems, alongside machines reached through cloud services.'],
+           ['What it now makes itself','Its own superconducting quantum chips, developed in house alongside those partner platforms.'],
+           ['Why this route matters','This is the one place in the country where capability is created rather than bought or attracted.']]},
+  {id:'buyco',layer:5,lane:'new',col:2,kind:'option',
+   name:'Buy the company',role:'Sovereign funds',
+   detail:[['Owner','Mubadala and ADQ.'],
+           ['The worked example','Mubadala is the controlling shareholder of GlobalFoundries, one of the world’s largest contract chipmakers.'],
+           ['The catch','That company is based in New York and building new capacity in Singapore. The country owns a semiconductor asset rather than a domestic semiconductor industry.'],
+           ['When it is the right route','When the capability cannot be trained for or attracted quickly, and the money is available to simply take ownership of it.']]},
+
+  {id:'dept',layer:6,gcol:1,gspan:3,kind:'shared',
+   name:'Abu Dhabi economic department',role:'Issues the licence',
+   detail:[['Why this is the chokepoint','No federal body can issue a factory licence. Everything above produces laws, lists, money and research; none of it permits a plant to open.'],
+           ['The stages','An initial licence to establish the company, then a construction licence, then a production licence to begin operating.'],
+           ['What else it runs','Abu Dhabi’s six industrial programmes: talent development, Industry 4.0, circular economy, ecosystem enablement, homegrown supply chain and value chain development.'],
+           ['Elsewhere in the country','Each emirate has its own equivalent department, and free zones license through their own authorities.'],
+           ['Why it sits at the bottom','A research laboratory and a chemicals plant both need this. It serves both sides of the diagram.']]},
+  {id:'zones',layer:6,gcol:4,gspan:3,kind:'shared',
+   name:'Industrial zones',role:'Supply land and utilities',
+   detail:[['Who runs them','Emirate-owned operators, such as the Khalifa Economic Zones run by AD Ports, and Dubai Industrial City.'],
+           ['What they supply','Land, power, water, infrastructure, and coordination with government bodies.'],
+           ['Why only emirates can do this','Each emirate owns the natural wealth within its borders and holds every power not assigned to the federation, including land and licensing.'],
+           ['A worked example','A AED 700 million pharmaceutical plant agreed in 2026: the company led the technical and regulatory work, and the zone operator supplied land, infrastructure and utilities.']]}
+ ],
+ flow:[
+  {from:'pmo',to:'apex'},{from:'unido',to:'apex'},
+  {from:'apex',to:'cabinet'},{from:'adec',to:'adrc'},
+  {from:'cabinet',to:'ministry'},{from:'ministry',to:'council'},
+  {from:'ministry',to:'bank'},{from:'ministry',to:'buyers'},
+  {from:'adrc',to:'funds'},
+  {from:'buyers',to:'place'},{from:'buyers',to:'attract'},
+  {from:'cabinet',to:'specialists'},{from:'adrc',to:'research'},
+  {from:'funds',to:'buyco'},
+  {from:'place',to:'dept'},{from:'research',to:'zones'}
+ ],
+ rel:[
+  {from:'ministry',to:'apex',label:'wrote the target',
+   note:'The ministry drafted the strategy itself, months after being created. The body measured against the number is the body that proposed it, which is why this arrow points upward.'},
+  {from:'buyers',to:'ministry',label:'supply the forecasts',
+   note:'These companies hand the ministry their ten year purchase plans. Pooled together, orders too small for any one buyer to justify a factory become large enough, and that pooled figure becomes the published product list.'},
+  {from:'council',to:'dept',label:'gets them to agree',
+   note:'The council is where a federal scheme reaches an emirate that is under no obligation to apply it. This is the only formal joint between federal instruments and emirate assets.'},
+  {from:'adec',to:'apex',label:'aligns, not subordinate',
+   note:'Abu Dhabi set its own target with its own money and describes its role as contributing to the national one. The link holds because the same ruling circle sits on both sides, not because of any legal duty.'},
+  {from:'ministry',to:'adrc',label:'names the same sectors',
+   note:'The ministry’s priority list includes space, biotechnology, medical technology and hydrogen, none of which anyone buys at scale yet. It names them but has no instrument that fits them, so the bodies on this side are what actually pursue them.'},
+  {from:'specialists',to:'research',label:'stands in for training',
+   note:'On the right hand side there is no employer to learn inside, so imported specialists substitute for a training route rather than supplementing one.'}
+ ]
+},
+{
+ id:'usa', name:'United States', flag:FLAGS.usa,
+ sub:'No single body sets direction. Lawmakers create money that outlives an administration, and the President sets tariffs that a court can cancel. Two systems then run in parallel: one anticipates technologies that barely exist, the other defends industries already lost.',
+ lanesFrom:3,
+ lanes:[{key:'ahead',label:'Getting ahead of new technology',cols:3},{key:'behind',label:'Defending industries already lost',cols:2}],
+ nodes:[
+  {id:'crs',layer:1,gcol:1,gspan:2,kind:'body',
+   name:'Congress research staff',role:'Answers and anticipates',
+   detail:[['What it is','Nonpartisan shared staff serving committees and members, working solely at the direction of Congress.'],
+           ['The newer arm','A separate audit office added a dedicated science and technology team in 2019 at Congress’s direction, staffed with engineers, chemists, biologists and physicists.'],
+           ['Output','Almost 150 reports since 2019 carrying more than 120 policy options, and over 90 technical consultations in 2024 alone.'],
+           ['Why it is unusual','It does not only answer questions put to it. It initiates work by anticipating what members will need.'],
+           ['Its limit','It advises. It decides nothing, and it holds no money.']]},
+  {id:'commissions',layer:1,gcol:3,gspan:2,kind:'body',
+   name:'Expert commissions',role:'Study, report, dissolve',
+   detail:[['How they work','Congress creates a temporary commission with a deadline, staffs it with industry, military and academic figures, then legislates from its report.'],
+           ['The transmission mechanism','The membership. The biotechnology commission has twelve members including two House members and two senators, so the legislators who receive the two year briefing are the ones who write the bill.'],
+           ['What one produced','The semiconductor recommendation found a political sponsor and became law.'],
+           ['What the same one did not','Its recommendation for a White House technology competitiveness council went nowhere. A recommendation without a sponsor is nothing.']]},
+  {id:'ostp',layer:1,gcol:5,gspan:2,kind:'body',
+   name:'White House science office',role:'Names the priority technologies',
+   detail:[['What it runs','An interagency process producing the critical and emerging technologies list, updated at least every two years.'],
+           ['Who actually supplies it','The 2024 update drew on subject matter experts from 18 departments and agencies. The agencies tell the White House what matters, not the reverse.'],
+           ['What the list does','Nothing on its own. It explicitly changes no regulatory regime. It is notice, not instruction.'],
+           ['The finding for this whole row','Foresight here is more developed than in any of the other three countries, and almost none of it carries authority.']]},
+
+  {id:'congress',layer:2,gcol:1,gspan:2,kind:'body',
+   name:'Lawmakers',role:'Slow, durable, hold the money',
+   detail:[['What only they can do','Create money. No other body in this map can.'],
+           ['The 2022 technology law','52.7 billion dollars made available for semiconductor manufacturing, plus a 25 per cent investment tax credit.'],
+           ['The four stages','Authorised, then appropriated, then obligated, then disbursed. Durability increases at every stage.'],
+           ['Where the money stopped','The chip half went through all four. The science half mostly stopped at the first: around 200 billion dollars remains allocated rather than appropriated.'],
+           ['The shortfall','Three research agencies were authorised 26.8 billion for one year and received somewhat above 19 billion, more than 28 per cent short. The research foundation was authorised 81 billion over five years to double the agency, and it did not happen. The manufacturing programme received 51 million in one year, about half what was authorised.'],
+           ['The point','A law creates durable money, not durable intent. Whoever runs the agency later decides what the money buys.'],
+           ['Why sophisticated actors prefer tax credits','No annual appropriation, no agency discretion, no negotiation. The chip law credit applies to any eligible facility beginning construction by 31 December 2026.']]},
+  {id:'president',layer:2,gcol:3,gspan:2,kind:'body',
+   name:'The President',role:'Fast, reversible, sets prices',
+   detail:[['The power used','Section 232 of a 1962 trade act lets the President adjust imports where the trade department finds that imports threaten national security.'],
+           ['How long a measure lasts','Until the President declares the threat over. No congressional involvement is required.'],
+           ['Speed against durability','A price can appear in months and vanish in months. Money takes years to arrive and then lasts years.'],
+           ['What else this office does','It creates offices by executive order, and it decides how appropriated money is deployed.'],
+           ['Check before use','The status of tariffs reimposed in 2026 under a 150 day statute is unresolved in the research behind this map.']]},
+  {id:'courts',layer:2,gcol:5,gspan:2,kind:'detached',
+   name:'The courts',role:'Can cancel, cannot create',
+   detail:[['What they did','On 20 February 2026 the Supreme Court ruled 6 to 3 that emergency economic powers do not authorise tariffs, invalidating both the reciprocal tariffs from April 2025 and the fentanyl related tariffs.'],
+           ['What happened next','Within hours the White House reimposed tariffs under a different 1974 statute allowing surcharges up to 15 per cent with no prior investigation, expiring after 150 days unless Congress extends them.'],
+           ['What that shows','The strategy did not change. The legal foundation under it did.'],
+           ['Why it is drawn detached','Nothing flows out of this box. A court can remove an instrument. It cannot create one, and it can direct nobody.']]},
+
+  {id:'law',layer:3,lane:'ahead',col:1,span:2,kind:'mechanism',
+   name:'A law with money in it',role:'Names the agency and the sum',
+   detail:[['Why this is not a body','No institution translates direction into an offer here. The statute is the translation: it names the agency, the sum and the conditions.'],
+           ['What it produces','Grants, tax credits and loan authority, which agencies then administer.'],
+           ['The durability point','Money already appropriated survives a change of administration. Intent does not.'],
+           ['What is missing','No sector roadmap, no targets, no plan. Nothing tells a given industry what to do, which is the sharpest contrast with Singapore.']]},
+  {id:'accelerator',layer:3,lane:'ahead',col:3,kind:'body',
+   name:'Investment accelerator office',role:'Clears the obstacles',
+   detail:[['Created','By executive order in March 2025, inside the trade department.'],
+           ['Its job','Facilitate investments above one billion dollars: help investors navigate federal regulatory processes, reduce regulatory burden, arrange research collaborations with the national laboratories, and work with all 50 state governments to lower barriers.'],
+           ['What it absorbed','The chip programme office, with a mandate to negotiate better deals.'],
+           ['What it is not','It clears obstacles rather than setting direction. No sector list, no targets, no plan.'],
+           ['Check before use','Whether the office still operates under this name has not been re-verified.']]},
+  {id:'investigation',layer:3,lane:'behind',col:1,span:2,kind:'mechanism',
+   name:'Trade department investigation',role:'Asks if imports threaten security',
+   detail:[['Why this is not a body','It is a statutory procedure. The department runs it, but the route is the procedure and any number of them run at once.'],
+           ['Who can start one','An application from an interested party, a request from any department head, or the trade secretary alone. Any company can trigger it, which is a bottom up route none of the other three countries has.'],
+           ['The clock','A report is due within 270 days.'],
+           ['Sectors run through it since 2025','Steel, aluminium and copper; automobiles and parts; timber, lumber and wood; trucks, parts and buses; critical minerals; semiconductors; pharmaceuticals.'],
+           ['Also opened','Polysilicon, unmanned aircraft and wind turbines.']]},
+
+  {id:'commerce',layer:4,lane:'ahead',col:1,kind:'body',
+   name:'Trade department',role:'Grants, and now equity',
+   detail:[['What it holds','The grant programmes created by law, and since 2025 a portfolio of direct ownership stakes.'],
+           ['The new instrument','Since January 2025 the government has announced investments worth 27.6 billion dollars across 37 deals involving direct ownership. This department leads with 24 announced deals, including a roughly 10 per cent stake in a chipmaker.'],
+           ['July 2026','Funds allocated to seven more companies, with the standards institute stating the department will receive a minority non controlling equity stake in each as a condition of funding.'],
+           ['How it is described','The head of the National Economic Council called it like a down payment on a sovereign wealth fund, which many countries have.'],
+           ['The oversight criticism','The 2008 bank rescue had a statutory special inspector general reporting quarterly to Congress, a congressional oversight panel and standing audits. This portfolio has none of that.'],
+           ['The authority criticism','The senator who drafted the foundation of the chip law says it never intended to allow the government to take a major stake in any company.'],
+           ['What the public thinks','One survey found 19 per cent agreed the government should own a portion of US companies, 49 per cent disapproved and 32 per cent were undecided.']]},
+  {id:'energy',layer:4,lane:'ahead',col:2,kind:'body',
+   name:'Energy department',role:'Lends, and holds the labs',
+   detail:[['What it lends','Loans and loan guarantees for energy and industrial projects, on terms no commercial lender offers.'],
+           ['What else it holds','The national laboratories, which is where a great deal of the science behind the forward technology list was actually done.'],
+           ['Why that matters here','It is the only delivery body in this map that can both fund a project and supply the underlying science.']]},
+  {id:'defense',layer:4,lane:'ahead',col:3,kind:'body',
+   name:'Defence department',role:'Buys, and signs long contracts',
+   detail:[['Why it is the strongest lever','It is a customer, not only a funder. It can guarantee that output will be bought before the plant exists.'],
+           ['What that unlocks','Private financing. A guaranteed buyer changes what a bank will lend against.'],
+           ['Where to see it','The capability route below this column sets out the full package it assembled for rare earth magnets in 2025.']]},
+  {id:'tariff',layer:4,lane:'behind',col:1,kind:'mechanism',
+   name:'The tariff itself',role:'A price, not a programme',
+   detail:[['Why this is not a body','No institution is created. A price changes at the border and every affected firm responds on its own.'],
+           ['How fast it moves','Months to appear and months to disappear. It is the fastest instrument in this map and the least durable.'],
+           ['What flows out of it','Nothing, on this page. A tariff can protect a plant. It cannot staff one, and it builds no capability.']]},
+  {id:'deal',layer:4,lane:'behind',col:2,kind:'mechanism',
+   name:'Onshoring agreements',role:'Company by company',
+   detail:[['What they are','The trade department has published procedures under which a pharmaceutical company can apply for a tariff adjustment in exchange for commitments to move production to the United States.'],
+           ['The trade','Tariff relief for a factory.'],
+           ['Why it is a mechanism','Each agreement is negotiated with one company. No standing body owns the route, and there is no published list of who qualifies.']]},
+
+  {id:'research',layer:5,lane:'ahead',col:1,kind:'option',
+   name:'Fund the research',role:'Research agencies and national laboratories',
+   detail:[['How long it takes','Decades. This is where the technologies on the forward list actually came from.'],
+           ['Why it is still the base','It is the only route on this row that creates a capability which existed nowhere before.'],
+           ['Its weakness here','This is the half of the 2022 law that mostly stopped at authorisation. The intent was funded on paper and then not appropriated.']]},
+  {id:'stake',layer:5,lane:'ahead',col:2,kind:'option',
+   name:'Buy a stake',role:'Trade department and the finance corporation',
+   detail:[['What changes','The state becomes an owner rather than a customer.'],
+           ['Scale','27.6 billion dollars across 37 announced deals since January 2025, including a roughly 10 per cent stake in a chipmaker.'],
+           ['Buying from allies','The development finance corporation has pledged six equity transactions in critical minerals, energy and infrastructure, and holds minerals agreements with partner countries. On that route the capability is secured abroad rather than built at home.'],
+           ['What is absent','Any of the oversight machinery that accompanied the 2008 bank rescue.']]},
+  {id:'demand',layer:5,lane:'ahead',col:3,kind:'option',
+   name:'Guarantee the demand',role:'Defence department',
+   detail:[['The worked example','A rare earth magnet package announced in 2025, and the strongest single case in this map.'],
+           ['The equity','400 million dollars of preferred stock making the Pentagon the largest shareholder, with an option for 350 million more.'],
+           ['The debt','A 150 million dollar unsecured loan at the ten year Treasury yield plus one per cent, repayable within twelve years.'],
+           ['The price floor','A ten year guaranteed floor of 110 dollars per kilogram for the relevant oxide, roughly double the market price at the time, with the government capturing 30 per cent of any upside above the benchmark.'],
+           ['The offtake','A ten year commitment to buy 100 per cent of the output of a new magnet plant, with a guaranteed minimum of 140 million dollars of annual earnings and profits split above 170 million.'],
+           ['The conditions','The company must not renew its offtake with a Chinese linked subsidiary, and the department may terminate, demand early repayment and pursue damages.'],
+           ['What it achieved','Two banks then committed up to one billion dollars of construction financing. The government did not fund the factory. It made the factory bankable, and each instrument removes a different reason it would not have been built.'],
+           ['The fragility','The department’s 2026 request for the relevant fund was only 266 million dollars, less than the annual price floor payments would cost at then current prices. A ten year commitment rests on Congress choosing to appropriate every year for a decade.']]},
+  {id:'attract',layer:5,lane:'behind',col:1,kind:'option',
+   name:'Attract the firm that has it',role:'Trade department and the states',
+   detail:[['How the capability arrives','Inside a foreign company. The fabs are built by foreign chipmakers.'],
+           ['What the states add','Land, permits and their own incentive packages, often comparable in size to the federal offer.'],
+           ['Why it sits on this side too','A tariff adjustment traded for a commitment to produce here is the same move, run one company at a time.'],
+           ['What it does not do','The know how belongs to the firm that brought it.']]},
+  {id:'workforce',layer:5,lane:'behind',col:2,kind:'detached',
+   name:'Train the workforce',role:'No national system',
+   detail:[['Why it is drawn detached','Nothing above it in this map produces it. There is no national skills system and no route running from direction down into training.'],
+           ['What does exist','An apprenticeship incentive fund launched by the labour department in December 2025, supporting a talent strategy and several executive orders on expanding registered apprenticeships.'],
+           ['Firm level help','51 manufacturing extension centres providing manufacturing, business and process improvement services. This is the closest thing here to the Emirati factory assessment programme, and it is a great deal older.'],
+           ['The scale of the problem','An industry association, not a government body, projects the industry needing 3.8 million additional workers by 2033, with 1.9 million potentially unfilled. 2.8 million of that need comes from retirements alone.'],
+           ['What that means','Replacing the workforce, not expanding it.'],
+           ['Check before use','The names and current terms of these programmes were described generically in the research and have not been verified.']]}
+ ],
+ absent:{6:'No federal chokepoint exists. There is no national land agency and no federal licence to open a factory, so nothing here corresponds to an emirate’s economic department or Singapore’s land agency. Land and permitting sit with states and localities, which layer on their own incentive packages, often comparable in size to the federal offer.'},
+ flow:[
+  {from:'crs',to:'congress'},{from:'commissions',to:'congress'},{from:'ostp',to:'president'},
+  {from:'congress',to:'law'},{from:'president',to:'accelerator'},{from:'president',to:'investigation'},
+  {from:'law',to:'commerce'},{from:'law',to:'energy'},{from:'law',to:'defense'},
+  {from:'accelerator',to:'commerce'},
+  {from:'investigation',to:'tariff'},{from:'investigation',to:'deal'},
+  {from:'energy',to:'research'},{from:'commerce',to:'stake'},{from:'defense',to:'demand'},
+  {from:'deal',to:'attract'}
+ ],
+ rel:[
+  {from:'president',to:'congress',label:'can repurpose the money',
+   note:'The chip grants were appropriated by Congress as grants and converted into a roughly 10 per cent equity stake in a chipmaker. The senator who drafted the foundation of that law said it never intended to allow the government to take a major stake in any company.'},
+  {from:'courts',to:'president',label:'can cancel, cannot create',
+   note:'In February 2026 the Court struck down the legal basis for two sets of tariffs. Within hours the same tariffs returned under a different statute. A court can remove an instrument without changing the direction behind it.'},
+  {from:'tariff',to:'deal',label:'relief traded for a factory',
+   note:'The tariff creates the leverage and the agreement spends it. A company facing the price can negotiate its way out by committing to produce here, which is the only path from the defensive system into any capability at all.'}
+ ],
+ dispute:{
+  title:'Outcomes, genuinely disputed',
+  sides:[
+   ['What supports the strategy','Factory activity expanded in January 2026 for the first time in over two years. Manufacturing productivity improved steadily through 2025, reversing a decline. Shipments of core capital goods reached a record, peaking near 78.7 billion dollars. In 2025 the United States passed Japan in crude steel production for the first time since 1999.'],
+   ['What undercuts it','Manufacturing employment has fallen about 1 per cent since the April 2025 tariffs. Factory construction spending has declined since 2024, driven by a 44 per cent slowdown in electronics and semiconductor plant spending since the mid 2024 peak. Excluding electronics, construction spending rose 5.6 per cent, lower than a boom would imply. Roughly 1.595 trillion dollars in factory commitments coexists with factory jobs down 82,000.']
+  ],
+  foot:'The strongest defence is timing. Employment lags investment by years: a semiconductor plant runs a nine year arc from announcement to full employment and pharmaceutical validation takes five to seven years, so a 2025 pledge shows up in employment data around 2030. The strongest counter is automation, because output can keep rising without proportional hiring.'
+ }
+},
+];
+/* -------------------------------------------------------------- plumbing */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let active=COUNTRIES[0].id, selected=null;
+
+function cols(lanes){ return lanes.map(l=>`repeat(${l.cols},minmax(0,1fr))`).join(' 46px '); }
+function laneStart(lanes,i){ return lanes.slice(0,i).reduce((a,x)=>a+x.cols+1,1); }
+function relsOf(sp,id){ return (sp.rel||[]).filter(r=>r.from===id||r.to===id); }
+
+function legendFor(c){
+  const ns=c.nodes, rels=(c.rel||[]).length;
+  const items=['<span><i class="key"></i>Named institution</span>'];
+  if(ns.some(n=>n.kind==='mechanism')) items.push('<span><i class="key mech"></i>Mechanism, no institution exists</span>');
+  if(ns.some(n=>n.kind==='option')) items.push('<span><i class="key opt"></i>A route, not a body. The line under it names the owner</span>');
+  if(ns.some(n=>n.kind==='detached')) items.push('<span><i class="key det"></i>Not connected to this chain</span>');
+  if(ns.some(n=>n.kind==='shared')) items.push('<span><i class="key shared"></i>Needed by both sides</span>');
+  if(ns.some(n=>n.kind==='tripartite')) items.push('<span><i class="key tri"></i>Government, business and unions sit together</span>');
+  if(rels) items.push('<span><i class="key dot"></i>Click to reveal its relationships</span>');
+  return `<div class="legend">${items.join('')}</div>`;
+}
+
+const KINDCLASS={mechanism:'mech',detached:'detached',shared:'shared',tripartite:'tri',option:'opt'};
+
+function buildBoard(sp){
+  const gt=cols(sp.lanes);
+  const absent=sp.absent||{};
+  const used=LAYERS.map((L,i)=>i+1).filter(i=>sp.nodes.some(n=>n.layer===i)||absent[i]);
+  const from=sp.lanesFrom||1;
+  const laneHeads=sp.lanes.map((l,i)=>
+    `<div class="lane-h" style="grid-column:${laneStart(sp.lanes,i)} / span ${l.cols}">${esc(l.label)}</div>`).join('');
+  const laneBar = sp.lanes.length<2 ? '' :
+    `<div class="lanes"><div></div><div class="row" style="grid-template-columns:${gt}">${laneHeads}</div></div>`;
+  const barAt = used.includes(from) ? from : used[0];
+  const rows=used.map(li=>{
+    const L=LAYERS[li-1];
+    const ns=sp.nodes.filter(n=>n.layer===li).map(n=>{
+      let gc;
+      if(n.lane){
+        const offset=laneStart(sp.lanes,sp.lanes.findIndex(l=>l.key===n.lane));
+        gc=`${offset+n.col-1} / span ${n.span||1}`;
+      } else gc=`${n.gcol} / span ${n.gspan||1}`;
+      const hasRel=relsOf(sp,n.id).length>0;
+      return `<button class="node ${KINDCLASS[n.kind]||''}"
+        data-node="${n.id}" aria-pressed="${selected===n.id}" style="grid-column:${gc}">
+        ${hasRel?'<span class="rels" aria-hidden="true"></span>':''}
+        <span class="nm">${esc(n.name)}</span><span class="role">${esc(n.role)}</span></button>`;
+    }).join('');
+    const gap = absent[li] ? `<div class="absent"><span class="nm">Nothing sits here</span>
+        <p>${esc(absent[li])}</p></div>` : '';
+    return `${li===barAt?laneBar:''}<div class="layer">
+        <div class="lhead"><div class="num">${L.num}</div><div class="nm">${L.name}</div>
+          <div class="note">${esc(L.note)}</div></div>
+        <div class="row" style="grid-template-columns:${gt}">${ns}${gap}</div>
+      </div>`;
+  }).join('');
+  return `<div class="board">
+      <svg class="wires" aria-hidden="true"></svg>${rows}
+      <svg class="wires top" aria-hidden="true"></svg></div>`;
+}
+
+function renderTabs(){
+  $('#tabs').innerHTML=COUNTRIES.map(c=>`<li role="presentation">
+    <button class="tab" role="tab" data-id="${c.id}" aria-selected="${c.id===active}" tabindex="${c.id===active?0:-1}">
+      ${c.flag}<span>${esc(c.name)}</span>${c.nodes?'':'<span class="soon">soon</span>'}
+    </button></li>`).join('');
+}
+
+const KICKER={mechanism:'Mechanism, not an institution',detached:'Not connected to this chain',
+              option:'Route, not a body',shared:'Institution, needed by both sides',
+              tripartite:'Institution, all three parties inside'};
+
+function renderDetail(c){
+  const box=$('#detail'); if(!box) return;
+  if(!selected){
+    box.innerHTML='<p class="idle">Select any box above. The panel will show who runs it, when it was created, how it is funded, and what it cannot do. Its relationships to other boxes appear in the diagram.</p>';
+    return;
+  }
+  const n=c.nodes.find(x=>x.id===selected);
+  if(!n){ selected=null; return renderDetail(c); }
+  const rs=relsOf(c,selected);
+  const rows=[...n.detail];
+  if(rs.length){
+    const nm=id=>c.nodes.find(x=>x.id===id).name;
+    const byLabel=new Map();
+    rs.forEach(r=>{ const g=byLabel.get(r.label)||{note:null,who:[]};
+      if(r.note) g.note=r.note;
+      g.who.push(nm(r.from===selected?r.to:r.from));
+      byLabel.set(r.label,g); });
+    const list=a=>a.length===1?a[0]:a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+    rows.push(['Its relationships',
+      [...byLabel.entries()].map(([lab,g])=> g.note
+        || (lab.charAt(0).toUpperCase()+lab.slice(1)+': '+list(g.who)+'.')).join(' ')]);
+  }
+  box.innerHTML=`<div class="kicker">${esc(LAYERS[n.layer-1].name)} &nbsp;&middot;&nbsp; ${esc(KICKER[n.kind]||'Institution')}</div>
+    <h3>${esc(n.name)}</h3><p class="lede">${esc(n.role)}</p>
+    <dl>${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`;
+}
+
+function disputeFor(c){
+  if(!c.dispute) return '';
+  const d=c.dispute;
+  return `<div class="dispute"><h4>${esc(d.title)}</h4>
+    <div class="cols">${d.sides.map(([k,v])=>`<div class="side"><b>${esc(k)}</b><p>${esc(v)}</p></div>`).join('')}</div>
+    <p class="foot">${esc(d.foot)}</p></div>`;
+}
+
+function render(){
+  renderTabs();
+  const c=COUNTRIES.find(x=>x.id===active), stage=$('#stage');
+  stage.innerHTML=`
+    <div class="intro"><h2>${esc(c.name)}</h2><p>${esc(c.sub)}</p></div>
+    <p class="hint"><i class="key dot"></i>Click any card to open its detail below, and to reveal how it connects to the others.</p>
+    ${buildBoard(c)}
+    ${legendFor(c)}
+    ${disputeFor(c)}
+    <div class="detail" id="detail"></div>`;
+  renderDetail(c);
+  draw();
+}
+
+/* ---- connectors measured from the rendered boxes ---- */
+function draw(){
+  const c=COUNTRIES.find(x=>x.id===active);
+  document.querySelectorAll('.board').forEach(board=>drawBoard(c,board));
+  if(CHECK) runCheck();
+}
+
+function drawBoard(sp,board){
+  const svg=board.querySelector('.wires:not(.top)');
+  if(!svg) return;
+  const B=board.getBoundingClientRect();
+  svg.setAttribute('viewBox',`0 0 ${B.width} ${B.height}`);
+  const box=id=>{ const el=board.querySelector(`[data-node="${id}"]`); if(!el) return null;
+    const r=el.getBoundingClientRect();
+    return {l:r.left-B.left,t:r.top-B.top,r:r.right-B.left,b:r.bottom-B.top,
+            cx:r.left-B.left+r.width/2,cy:r.top-B.top+r.height/2}; };
+
+  const bySrc={}; (sp.flow||[]).forEach(f=>{ (bySrc[f.from]=bySrc[f.from]||[]).push(f); });
+  const order=Object.keys(bySrc);
+  const layerOf={}; sp.nodes.forEach(n=>layerOf[n.id]=n.layer);
+  const allLefts=[...board.querySelectorAll('.node')].map(e=>e.getBoundingClientRect().left-B.left);
+  const chan=Math.max(8,Math.min(...allLefts)-16);
+
+  const rects=[...board.querySelectorAll('.node')].map(el=>{const r=el.getBoundingClientRect();
+    return {l:r.left-B.left,t:r.top-B.top,r:r.right-B.left,b:r.bottom-B.top};});
+
+  const paths=[];
+  let bypass=0;
+  for(const src of order){
+    const a=box(src); if(!a) continue;
+    bySrc[src].forEach(f=>{
+      const b=box(f.to); if(!b) return;
+
+      /* A flow that skips a row leaves its own row, runs down the left channel,
+         then crosses in the empty gap ABOVE the target row. Crossing at the
+         target's own height would run the line straight through the boxes
+         standing between the channel and the target. */
+      if(layerOf[f.to]-layerOf[f.from]>1){
+        const r=9, y1=a.b+18, y2=b.t-20-9*(bypass++);
+        paths.push(`M ${a.cx} ${a.b} L ${a.cx} ${y1-r} Q ${a.cx} ${y1} ${a.cx-r} ${y1} `+
+          `L ${chan+r} ${y1} Q ${chan} ${y1} ${chan} ${y1+r} `+
+          `L ${chan} ${y2-r} Q ${chan} ${y2} ${chan+r} ${y2} `+
+          `L ${b.cx-r} ${y2} Q ${b.cx} ${y2} ${b.cx} ${y2+r} L ${b.cx} ${b.t-6}`);
+        return;
+      }
+
+      /* a flow inside one row runs edge to edge, and dips below the row if
+         another box stands in the way. Drawn down the middle it would run
+         straight through the box it points at. */
+      if(layerOf[f.to]===layerOf[f.from]){
+        const right=b.cx>a.cx, x1=right?a.r:a.l, x2=right?b.l-6:b.r+6;
+        const lo=Math.min(x1,x2), hi=Math.max(x1,x2);
+        const blocked=rects.some(n=>n.t<a.b-1&&n.b>a.t+1&&n.l>lo+1&&n.r<hi-1);
+        paths.push(blocked
+          ? `M ${a.cx} ${a.b} C ${a.cx} ${a.b+44} ${b.cx} ${b.b+44} ${b.cx} ${b.b+6}`
+          : `M ${x1} ${a.cy} L ${x2} ${a.cy}`);
+        return;
+      }
+
+      /* stagger each parent's fan inside the vertical gap so two parents never
+         share a horizontal line. The spread stays inside the gap however many
+         parents there are, or the line lands on the row it points at. */
+      const gap=b.t-a.b;
+      const peers=order.filter(s=>{const p=box(s);return p&&Math.abs(p.b-a.b)<2;});
+      const idx=Math.max(0,peers.indexOf(src));
+      const m=a.b+gap*(peers.length>1?(0.30+0.45*idx/(peers.length-1)):0.5);
+      const R=Math.min(10,Math.abs(b.cx-a.cx)/2,gap/4)||0;
+      const s=Math.sign(b.cx-a.cx);
+      paths.push(Math.abs(b.cx-a.cx)<2
+        ? `M ${a.cx} ${a.b} L ${b.cx} ${b.t-6}`
+        : `M ${a.cx} ${a.b} L ${a.cx} ${m-R} Q ${a.cx} ${m} ${a.cx+s*R} ${m} `+
+          `L ${b.cx-s*R} ${m} Q ${b.cx} ${m} ${b.cx} ${m+R} L ${b.cx} ${b.t-6}`);
+    });
+  }
+
+  /* relationship curves, worked out before anything is painted so that the
+     labels can be placed against the finished picture */
+  const curves=[];
+  if(selected&&sp.nodes.some(n=>n.id===selected)){
+    relsOf(sp,selected).forEach(r=>{
+      const a=box(r.from),b=box(r.to); if(!a||!b) return;
+      const down=b.t>a.b, up=b.b<a.t, sameRow=Math.abs(a.cy-b.cy)<20;
+      let p1,p2,c1,c2;
+      if(sameRow){                                   // dip below the row
+        const dip=46; p1=[a.cx,a.b]; p2=[b.cx,b.b];
+        c1=[a.cx,a.b+dip]; c2=[b.cx,b.b+dip];
+      } else if(down||up){ p1=[a.cx,down?a.b:a.t]; p2=[b.cx,down?b.t:b.b];
+        const k=(p2[1]-p1[1])*0.42; c1=[p1[0]+(p2[0]-p1[0])*0.15,p1[1]+k]; c2=[p2[0]-(p2[0]-p1[0])*0.15,p2[1]-k]; }
+      else { const rightward=b.cx>a.cx;
+        p1=[rightward?a.r:a.l,a.cy]; p2=[rightward?b.l:b.r,b.cy];
+        const k=(p2[0]-p1[0])*0.45; c1=[p1[0]+k,p1[1]]; c2=[p2[0]-k,p2[1]]; }
+      curves.push({label:r.label,sameRow,p1,c1,c2,p2});
+    });
+  }
+
+  svg.innerHTML=`<defs>
+      <marker id="a1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M1 1.5 6 5 1 8.5" fill="none" stroke="#8C8C8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+      <marker id="ah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M1 1.5 6 5 1 8.5" fill="none" stroke="#003B48" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    </defs>`+
+    paths.map(d=>`<path class="flow" data-lab="" d="${d}" fill="none" stroke="#C2C2C2" stroke-width="1.5" marker-end="url(#a1)"/>`).join('')+
+    curves.map(c=>`<path data-lab="${esc(c.label)}" d="M ${c.p1[0]} ${c.p1[1]} C ${c.c1[0]} ${c.c1[1]} ${c.c2[0]} ${c.c2[1]} ${c.p2[0]} ${c.p2[1]}"
+      fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="6 4" marker-end="url(#ah)"/>`).join('');
+
+  /* Place each label on the first point along its curve that clears every box
+     AND every line already drawn. Testing boxes alone was the known gap in the
+     old validators: it let a connector run straight through the wording. */
+  const ink=[...svg.querySelectorAll('path[data-lab]')].map(p=>{
+    const pts=[], len=p.getTotalLength();
+    for(let d=0;d<=len;d+=7){const q=p.getPointAtLength(d);pts.push([q.x,q.y]);}
+    return {lab:p.dataset.lab,pts};
+  });
+  let labs='';
+  const seen=new Set();
+  curves.forEach(c=>{
+    if(seen.has(c.label)) return;
+    seen.add(c.label);
+    const at=t=>{const u=1-t;return [
+      u*u*u*c.p1[0]+3*u*u*t*c.c1[0]+3*u*t*t*c.c2[0]+t*t*t*c.p2[0],
+      u*u*u*c.p1[1]+3*u*u*t*c.c1[1]+3*u*t*t*c.c2[1]+t*t*t*c.p2[1]];};
+    const halfW=c.label.length*3.6+7, halfH=11, dy=c.sameRow?14:-8;
+    /* a vertical curve gives every point along it the same x, so the label has
+       to be allowed sideways as well as up and down or it can never step off a
+       line running the same way */
+    let best=at(.5), bestDy=dy, bestDx=0, score=Infinity;
+    for(const t of [.5,.36,.64,.24,.76,.15,.85]){
+      const q=at(t);
+      for(const d of [dy,dy-16,dy+16,dy-30,dy+30,dy-44,dy+44]){
+        for(const dx of [0,halfW+16,-(halfW+16),halfW+40,-(halfW+40)]){
+          const lb={l:q[0]+dx-halfW,r:q[0]+dx+halfW,t:q[1]+d-halfH,b:q[1]+d+halfH};
+          let s=0;
+          rects.forEach(n=>{ if(lb.l<n.r&&lb.r>n.l&&lb.t<n.b&&lb.b>n.t) s+=100; });
+          ink.forEach(o=>{ if(o.lab===c.label) return;
+            o.pts.forEach(([x,y])=>{ if(x>lb.l&&x<lb.r&&y>lb.t&&y<lb.b) s++; }); });
+          if(s<score){ score=s; best=q; bestDy=d; bestDx=dx; }
+          if(!score) break;
+        }
+        if(!score) break;
+      }
+      if(!score) break;
+    }
+    labs+=`<text class="wirelab" x="${best[0]+bestDx}" y="${best[1]+bestDy}" text-anchor="middle">${esc(c.label)}</text>`;
+  });
+
+  const lsvg=board.querySelector('.wires.top');
+  if(lsvg){ lsvg.setAttribute('viewBox',`0 0 ${B.width} ${B.height}`); lsvg.innerHTML=labs; }
+
+  board.querySelectorAll('.node').forEach(el=>el.classList.remove('linked'));
+  if(selected&&sp.nodes.some(n=>n.id===selected)) relsOf(sp,selected).forEach(r=>{
+    [r.from,r.to].filter(i=>i!==selected).forEach(i=>
+      board.querySelector(`[data-node="${i}"]`)?.classList.add('linked'));
+  });
+}
+
+/* ---------------------------------------------------------------- checks
+   Run any change past these. Open the file with ?check to see the panel.
+   The data checks catch broken arrows; the geometry checks catch the class
+   of bug the old python validators could not see, which is a connector
+   drawn straight through a box or a label.                                */
+const CHECK=/[?&]check/.test(location.search);
+
+function checkData(){
+  const out=[];
+  COUNTRIES.forEach(c=>{
+    const ids=new Set();
+    c.nodes.forEach(n=>{
+      if(ids.has(n.id)) out.push(`${c.id}: two boxes share the id ${n.id}`);
+      ids.add(n.id);
+      if(!n.detail||!n.detail.length) out.push(`${c.id}: ${n.id} has no detail`);
+      if(n.kind==='option'&&n.layer!==5) out.push(`${c.id}: ${n.id} is a route outside layer 05`);
+      if(n.layer===5&&n.kind==='body') out.push(`${c.id}: ${n.id} is a body at layer 05, which should hold routes`);
+    });
+    (c.flow||[]).forEach(f=>{
+      if(!ids.has(f.from)||!ids.has(f.to)){ out.push(`${c.id}: flow ${f.from} to ${f.to} misses a box`); return; }
+      // lateral flows inside one layer are allowed: a cabinet funds a council,
+      // a ministry briefs a council. Upward is not, that is what rel is for.
+      const A=c.nodes.find(n=>n.id===f.from), Z=c.nodes.find(n=>n.id===f.to);
+      if(Z.layer<A.layer) out.push(`${c.id}: flow ${f.from} to ${f.to} runs upward`);
+    });
+    (c.rel||[]).forEach(r=>{
+      if(!ids.has(r.from)||!ids.has(r.to)) out.push(`${c.id}: relationship ${r.from} to ${r.to} misses a box`);
+    });
+    Object.keys(c.absent||{}).forEach(k=>{
+      if(c.nodes.some(n=>n.layer===+k)) out.push(`${c.id}: layer ${k} is marked empty but holds boxes`);
+    });
+  });
+  return out;
+}
+
+function checkGeometry(){
+  const out=[], board=document.querySelector('.board');
+  if(!board) return out;
+  const B=board.getBoundingClientRect();
+  const R=el=>{const r=el.getBoundingClientRect();
+    return {l:r.left-B.left,t:r.top-B.top,r:r.right-B.left,b:r.bottom-B.top};};
+  const nodes=[...board.querySelectorAll('.node')];
+
+  nodes.forEach(el=>{
+    if(el.scrollHeight>el.clientHeight+1) out.push(`text overflows the box: ${el.querySelector('.nm').textContent}`);
+  });
+  for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+    const a=R(nodes[i]),b=R(nodes[j]);
+    if(a.l<b.r-1&&a.r>b.l+1&&a.t<b.b-1&&a.b>b.t+1)
+      out.push(`boxes overlap: ${nodes[i].querySelector('.nm').textContent} and ${nodes[j].querySelector('.nm').textContent}`);
+  }
+  const boxes=nodes.map(el=>({r:R(el),nm:el.querySelector('.nm').textContent}));
+  const labels=[...board.querySelectorAll('.wirelab')].map(t=>{const b=t.getBBox();
+    return {r:{l:b.x,t:b.y,r:b.x+b.width,b:b.y+b.height},nm:t.textContent};});
+  board.querySelectorAll('path.flow').forEach(p=>{
+    const len=p.getTotalLength(); const hits=new Set();
+    for(let d=0;d<=len;d+=5){
+      const q=p.getPointAtLength(d);
+      boxes.forEach(o=>{ if(q.x>o.r.l+2&&q.x<o.r.r-2&&q.y>o.r.t+2&&q.y<o.r.b-2) hits.add('box '+o.nm); });
+      labels.forEach(o=>{ if(q.x>o.r.l&&q.x<o.r.r&&q.y>o.r.t&&q.y<o.r.b) hits.add('label '+o.nm); });
+    }
+    hits.forEach(h=>out.push(`a connector runs through ${h}`));
+  });
+  return out;
+}
+
+function runCheck(){
+  const problems=[...checkData(),...checkGeometry()];
+  let el=document.getElementById('check');
+  if(!el){ el=document.createElement('div'); el.id='check'; document.body.appendChild(el); }
+  el.innerHTML=problems.length
+    ? `<b>${problems.length} to fix in ${active}</b><ul>${[...new Set(problems)].map(p=>`<li>${esc(p)}</li>`).join('')}</ul>`
+    : `<b>clean: ${active}</b><ul><li>arrows land on real boxes, nothing overlaps, no connector crosses a box or a label</li></ul>`;
+  return problems;
+}
+window.check=()=>[...checkData(),...checkGeometry()];
+
+/* ---------------------------------------------------------------- events */
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('.tab');
+  if(tab){ active=tab.dataset.id; selected=null; render(); return; }
+  const node=e.target.closest('.node');
+  if(node){ selected = selected===node.dataset.node ? null : node.dataset.node;
+    render(); if(selected) document.querySelector(`[data-node="${selected}"]`).focus(); }
+});
+$('#tabs').addEventListener('keydown',e=>{
+  if(!['ArrowRight','ArrowLeft'].includes(e.key)) return;
+  const i=COUNTRIES.findIndex(c=>c.id===active);
+  active=COUNTRIES[(i+(e.key==='ArrowRight'?1:-1)+COUNTRIES.length)%COUNTRIES.length].id;
+  selected=null; render(); $('#tabs').querySelector('[aria-selected="true"]').focus();
+});
+addEventListener('resize',()=>draw());
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(draw);
+render();
+</script>
