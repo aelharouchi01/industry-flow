@@ -368,18 +368,21 @@ const COUNTRIES=[
            ['Why it matters','A big review sets direction every several years. This council carries it in between, which is why direction does not lapse.']]},
 
   {id:'clusters',layer:3,lane:'one',col:1,span:2,kind:'tripartite',
-   name:'The industry clusters',role:'Co-chaired by both sides',
-   detail:[['What they are','Groupings of the 23 sectors, so that related industries are steered together rather than one at a time.'],
+   name:'Cluster sub-committees',role:'One public and one private chair',
+   detail:[['What they are','Sub-committees of the council above. Six tripartite sub-committees, each led by a public and a private sector co-chair, coordinating the effort for one grouping of industries. The grouping is the cluster. The sub-committee is the body.'],
            ['The named clusters','Manufacturing, Built Environment, Trade and Connectivity, Essential Domestic Services, Modern Services, and Lifestyle.'],
-           ['A caution on the count','The ministry describes the council as supported by seven clusters, while the finance ministry refers to six tripartite sub-committees. Six are named on the ministry’s own pages. Check the current number before putting it on a slide.'],
-           ['How they are chaired','Each is co-chaired by a political office holder and a private sector figure. The Built Environment cluster, for example, was co-led by a minister and a private sector chairman, with the building authority coordinating the stakeholders beneath them.'],
+           ['A caution on the count','The finance ministry refers to six sub-committees for six clusters. The trade ministry describes the council as supported by seven clusters. Six are named. Check the current number before putting it on a slide.'],
+           ['Who the two chairs actually are','For Built Environment, Minister Desmond Lee on the public side and Lim Ming Yan of CapitaLand on the private side. That is the pattern: a serving minister and a named company executive, in the same chair, over the same group of industries.'],
            ['They are not industry associations','A cluster is a government forum. It is not a trade body and has no members. Do not confuse it with the associations described below.'],
            ['Who the private side actually is','The trade associations and chambers, known as TACs, plus the national employers federation and the union congress. In retail, for example, three associations covering more than 1,100 member companies and around 94,000 workers sit opposite the agencies.'],
            ['Who writes the actual roadmap','Industry Tripartite Committees do the work on each transformation map. That is the room where the agency, the associations, the employers federation and the unions co-create the plan.'],
-           ['Why they are not the same as the row below','A cluster is a forum with two chairs. A lead agency is a statutory board that owns a sector and delivers it. The cluster steers, the agency executes.']]},
+           ['Where the handoff happens','This sub-committee coordinates. It does not execute. For each sector inside its cluster, one statutory board carries the roadmap and delivers it, which is the box to the right.'],
+           ['What actually carries the continuity','Not a document passed between bodies. People. The co-chairs sit on the council above, the same associations and unions sit on the committee that writes each roadmap, and the agency that writes the roadmap is the agency that delivers it. Continuity here is overlapping membership, not handover.'],
+           ['Why they are not the same as the box to the right','A sub-committee is a forum with two chairs and no staff. A lead agency is a statutory board with a budget and delivery obligations. The sub-committee steers, the agency executes.']]},
   {id:'leads',layer:3,lane:'one',col:3,span:2,kind:'tripartite',
    name:'Sector lead agencies',role:'One for each of 23 sectors',
    detail:[['This is a role, not a new body','No agency is created here. The lead agencies are the same statutory boards that appear on the delivery row below, wearing a second hat. The investment board leads the roadmaps for electronics, precision engineering, energy and chemicals, aerospace and logistics, and then delivers them.'],
+           ['What it receives from the left','A cluster sub-committee coordinates a group of industries and has two co-chairs but no staff. This is where a named institution picks up one sector and becomes accountable for it.'],
            ['The principle','Each sector roadmap has exactly one lead agency. There is no super-agency running everything.'],
            ['Who leads what','The investment board leads its manufacturing sectors. The monetary authority is understood to lead financial services and the civil aviation authority air transport, and the building authority coordinated the built environment work. Confirm any specific pairing before quoting it.'],
            ['What they produce','23 Industry Transformation Maps covering about 80 per cent of the economy, each co-created by government, industry stakeholders and unions.'],
@@ -458,7 +461,7 @@ const COUNTRIES=[
  flow:[
   {from:'csf',to:'cabinet'},{from:'review',to:'cabinet'},
   {from:'cabinet',to:'fec'},
-  {from:'fec',to:'clusters'},{from:'fec',to:'leads'},
+  {from:'fec',to:'clusters'},{from:'clusters',to:'leads'},
   {from:'leads',to:'edb'},{from:'leads',to:'esg'},{from:'leads',to:'astar'},
   {from:'leads',to:'retrain'},{from:'leads',to:'redesign'},
   {from:'esg',to:'facility'},{from:'astar',to:'facility'},{from:'astar',to:'joint'},
@@ -956,7 +959,10 @@ function drawBoard(sp,board){
          target's own height would run the line straight through the boxes
          standing between the channel and the target. */
       if(layerOf[f.to]-layerOf[f.from]>1){
-        const r=9, y1=a.b+18, y2=b.t-20-9*(bypass++);
+        /* stagger the exit as well as the entry, or two bypasses leaving the
+           same box run down one line and land on each other */
+        const r=9, y1=a.b+16+10*bypass, y2=b.t-20-9*bypass;
+        bypass++;
         paths.push(`M ${a.cx} ${a.b} L ${a.cx} ${y1-r} Q ${a.cx} ${y1} ${a.cx-r} ${y1} `+
           `L ${chan+r} ${y1} Q ${chan} ${y1} ${chan} ${y1+r} `+
           `L ${chan} ${y2-r} Q ${chan} ${y2} ${chan+r} ${y2} `+
