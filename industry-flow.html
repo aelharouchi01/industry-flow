@@ -261,7 +261,8 @@ const COUNTRIES=[
            ['Who is in the room','Chief executives and board members of large Brazilian companies. Published figures vary by source and period, from around 200 leaders to more than 500, and one forum description reaches about 700 participants across companies, academia and the public sector. Do not quote a precise number.'],
            ['What it actually is','A movement, not a legal entity. No budget, almost no staff. Its power is that the people in the room run the companies.'],
            ['How a gap gets closed','The observatory finds it, this committee decides it matters, the confederation points its money at it, the institutes deliver it.'],
-           ['What it has built','It backed the creation of the SENAI Technology Institutes network.'],
+           ['What came out of it','The applied research agency at layer 04 was born from this platform’s discussions, presented as a demand from industry, and created by two ministries in 2013. That is the clearest case of this room producing an institution.'],
+           ['A weaker claim, treated as such','It is also credited with backing the creation of industry’s own innovation institute network from 2011 to 2013. Industry leaders were involved, but the specific attribution to this platform is not separately sourced.'],
            ['What it changed in law','It defended the 2005 research tax incentive from suspension, and backed the 2021 law that stopped the Treasury blocking the national science fund, which is the fund FINEP depends on.']]},
   {id:'feds',layer:3,lane:'ind',col:2,kind:'body',
    name:'The federations',alt:'FIESP, FIRJAN, FIEMG and 24 others',role:'Political force, not delivery',
@@ -324,10 +325,11 @@ const COUNTRIES=[
            ['Why it sits on this side','This is the only route on the row that creates a skill, and industry owns it.']]},
   {id:'newinst',layer:5,lane:'ind',col:2,kind:'option',
    name:'Build a new institute',role:'Industry lobbies for it',
-   detail:[['Owner','Nobody standing. The confederation asks government to create a new instrument.'],
-           ['When it is used','When a gap is too large for industry to close alone.'],
-           ['What it has produced','This is how the applied research agency on the government side came to exist, in 2013.'],
-           ['Its limit','It depends on a government willing to create something, so it is the slowest route on the page and the only one with no owner of its own.']]}
+   detail:[['Owner','Nobody standing. Industry specifies an institution and asks government to create it.'],
+           ['When it is used','When a gap is too large for industry to close alone, and no existing body fits it.'],
+           ['The worked example','The applied research agency on the government side came out of the chief executive platform’s own discussions, as a demand from industry, and was created by two ministries in 2013. It was modelled on the state agricultural research company and nicknamed the agricultural agency of industry.'],
+           ['What industry asked for, and got','Not a subsidy. A named institution, with a specified legal form. It was deliberately not made a state company, and its governance is majority private.'],
+           ['Its limit','It depends on a government willing to create something. This is the slowest route on the page and the only one with no owner of its own, but it is also the only one that changes the shape of the system rather than working within it.']]}
  ],
  flow:[
   {from:'sci',to:'cndi'},{from:'obs',to:'cni'},
@@ -343,12 +345,12 @@ const COUNTRIES=[
    note:'CNI holds a voting seat on CNDI, so industry argues its case inside the government decision rather than from outside it.'},
   {from:'feds',to:'cni',label:'they own it',
    note:'The 27 state federations own CNI. Industry’s direction body is owned from below by its members, which is the opposite of how the government side is directed.'},
-  {from:'cni',to:'embr',label:'lobbied it into being',
-   note:'CNI lobbied EMBRAPII into existence in 2013 and holds seats on its board, so a public agency is partly steered by the private side.'},
+  {from:'mei',to:'embr',label:'asked it into being',
+   note:'The applied research agency was born out of the chief executive platform’s own discussions, as a demand from industry. It was modelled on the state agricultural research company that transformed Brazilian farming, and was nicknamed the agricultural agency of industry. It was deliberately not made a state company: management is shared between public and private sectors and its governance is majority private. Industry did not lobby for a subsidy here. It specified an institution and got it.'},
   {from:'mei',to:'finep',label:'unblocked its fund',
    note:'MEI backed the 2021 law that stopped the Treasury withholding the science fund FINEP draws on. Industry protected a government agency’s money.'},
   {from:'bndes',to:'train',label:'public money spent inside',
-   note:'All three funders place public money inside the private institutes, and the main channel is accreditation. Industry runs 28 innovation institutes and 18 of them are accredited as units of the applied research agency, which then routes non reimbursable federal money through them. The innovation agency runs joint calls with the training system directly, selecting 39 projects in one smart factory call. One northern institute was accredited with R$9.6 million assembled from the research agency, the development bank and three ministries. Public and private funding mix at the exact point where the work is done.'},
+   note:'All three funders place public money inside the private institutes, and the main channel is accreditation. Industry runs two institute networks, one for technology and one for innovation, and 18 of its innovation institutes are accredited as units of the applied research agency, which then routes non reimbursable federal money through them. Published counts of those institutes vary by source and date, so cite the accreditation figure rather than a network total. The innovation agency runs joint calls with the training system directly, selecting 39 projects in one smart factory call. One northern institute was accredited with R$9.6 million assembled from the research agency, the development bank and three ministries. Public and private funding mix at the exact point where the work is done.'},
   {from:'finep',to:'train',label:'public money spent inside'},
   {from:'embr',to:'train',label:'public money spent inside'}
  ]
