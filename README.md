@@ -47,9 +47,14 @@ something that took a while to get right.
    described below.
 2. **A box carries a name plus three or four words of role.** Everything else lives
    in the click-through panel. This is what creates the room.
-3. **No acronyms on cards.** Plain names on the box, real names and abbreviations in
-   the detail panel. "Industry ministry" on the card, "Ministry of Industry and
-   Advanced Technology" inside.
+3. **A card carries the name a practitioner in that country would actually use,
+   plus a translation.** Where an acronym is the working name, as it is throughout
+   Brazil, the acronym goes on the box and the `alt` field carries the expanded or
+   English name in small type beneath it. Where the local usage is a plain name, as
+   in the Emirates, the plain name goes on the box. The full legal name always lives
+   in the detail panel. This replaces an earlier rule banning acronyms outright,
+   which failed the bilingual case: a reader working with Brazilian counterparts
+   needs "CNDI" and "National Council for Industrial Development" together.
 4. **Default view shows downward flow only.** Sideways and upward relationships
    appear only when a box is selected.
 5. **A body appears once.** If it has two functions, show the second as a
@@ -102,6 +107,8 @@ node = {
   gcol, gspan,                      // for shared layers above lanesFrom
   kind,                             // see below
   name, role,                       // role is 3 or 4 words
+  alt,                              // optional: small second line under the name.
+                                    // the translation, or the local shorthand
   detail: [ ['Label','Fact'], ... ] // shown in the panel below
 }
 

@@ -68,6 +68,7 @@ h1{font-weight:700;font-size:clamp(22px,2.8vw,29px);letter-spacing:-.012em;margi
 .node:hover{border-color:var(--accent)}
 .node:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .node .nm{font-size:19px;font-weight:700;letter-spacing:-.012em;line-height:1.18}
+.node .alt{font-size:13px;color:var(--faint);line-height:1.24;margin-top:-3px}
 .node .role{font-size:15px;color:var(--muted);line-height:1.32}
 .node.mech{background:var(--shade);border-color:transparent}
 .node.shared{background:var(--shade)}
@@ -197,14 +198,14 @@ const COUNTRIES=[
  lanes:[{key:'gov',label:'Government',cols:3},{key:'ind',label:'Industry',cols:2}],
  nodes:[
   {id:'sci',layer:1,lane:'gov',col:1,span:2,kind:'body',
-   name:'Science ministry',role:'Holds a seat on the council',
+   name:'Science ministry',alt:'MCTI, plus Planning at item (g)',role:'Holds a seat on the council',
    detail:[['Its full name','The Ministry of Science, Technology and Innovation.'],
            ['Its seat','Decree 11.482 of 2023 lists the science minister among the ministers composing the industrial council. The planning and budget minister is listed too. Government foresight does reach the table where missions are set.'],
            ['What it does not have','A standing industrial foresight unit. It is a ministry with a seat, not a body whose job is to project where industry is heading, which is what industry built for itself on the right.'],
            ['The real asymmetry','Compare the two sides of this row. Industry runs a permanent in house observatory pointed at its own skills gap. Government relies on ministries that each carry a wider brief.'],
            ['Note on an earlier version','An earlier build of this map drew this box as detached, on the claim that neither science nor planning held a council seat. That was wrong. Both are named in the decree.']]},
   {id:'obs',layer:1,lane:'ind',col:1,span:2,kind:'body',
-   name:'Industry Observatory',role:'Projects the skills gap ahead',
+   name:'Industry Observatory',alt:'Observatório Nacional da Indústria',role:'Projects the skills gap ahead',
    detail:[['Its full name','The Observatório Nacional da Indústria, run by the confederation. A permanent in house data hub, not a commissioned study.'],
            ['What it produces','The Mapa do Trabalho Industrial, a forward looking study built on econometric modelling of expected growth and labour market conditions, identifying future demand for industrial workers.'],
            ['The number it produced','The 2025 to 2027 edition projects demand to qualify 14 million people: 2.2 million newly trained and 11.8 million existing workers requalified.'],
@@ -212,7 +213,7 @@ const COUNTRIES=[
            ['Why it matters here','This is the join between foresight and capability, and both ends of it are owned by industry rather than government.']]},
 
   {id:'cndi',layer:2,lane:'gov',col:1,span:2,kind:'body',
-   name:'Industrial development council',role:'Proposes, holds no money',
+   name:'CNDI',alt:'National Council for Industrial Development',role:'Proposes, holds no money',
    detail:[['Full name','National Council for Industrial Development, known as CNDI.'],
            ['Created','By Article 18 of Law 11.080 of 30 December 2004, the same law that created the industrial development agency.'],
            ['What it is constituted to do','It is linked to the Presidency of the Republic and its function is to *propose* to the President national policies and specific measures to promote industrial development. Proposing is the whole of its statutory power.'],
@@ -224,7 +225,7 @@ const COUNTRIES=[
            ['Its power','Its decisions become government policy and set what qualifies for subsidised state credit.'],
            ['Its limit','It holds no budget, and it stops the moment a government stops convening it. It has been switched off once already.']]},
   {id:'cni',layer:2,lane:'ind',col:1,span:2,kind:'body',
-   name:'Industry confederation',role:'Private, and never switched off',
+   name:'CNI',alt:'National Confederation of Industry',role:'Private, and never switched off',
    detail:[['Full name','National Confederation of Industry.'],
            ['Founded','1938, by four state federations, and never interrupted since.'],
            ['Why the date matters','Industry’s decision body is older than most government agencies it deals with, and has never been switched off.'],
@@ -251,7 +252,7 @@ const COUNTRIES=[
            ['Coordination by assignment','The productivity programme gives each body a role. A ministry coordinates, the training system delivers shop floor work, the funders pay. About 67,500 companies supported.'],
            ['Coordination by rule','The automotive programme writes it into the funding conditions: five or more carmakers, one accredited research centre, one industry institute as coordinator.']]},
   {id:'mei',layer:3,lane:'ind',col:1,kind:'body',
-   name:'Chief executive platform',role:'No budget, only the people',
+   name:'MEI',alt:'Business Mobilization for Innovation',role:'No budget, only the people',
    detail:[['Full name','Business Mobilization for Innovation.'],
            ['Founded','2008, by the confederation.'],
            ['Who is in the room','Around 200 to 300 of the largest companies in Brazil, represented by their chief executives or board members, sitting on a Business Leaders Committee.'],
@@ -260,7 +261,7 @@ const COUNTRIES=[
            ['What it has built','It backed the creation of the SENAI Technology Institutes network.'],
            ['What it changed in law','It defended the 2005 research tax incentive from suspension, and backed the 2021 law that stopped the Treasury blocking the national science fund, which is the fund FINEP depends on.']]},
   {id:'feds',layer:3,lane:'ind',col:2,kind:'body',
-   name:'The federations',role:'Political force, not delivery',
+   name:'The federations',alt:'FIESP, FIRJAN, FIEMG and 24 others',role:'Political force, not delivery',
    detail:[['What they are','27 state federations, one per state plus the Federal District, such as FIESP in Sao Paulo, together with roughly 1,250 employer unions beneath them.'],
            ['Their age','The structure dates from the 1930s. FIESP was founded in 1931, before the national confederation existed.'],
            ['What they do','Represent members and apply political pressure. They own the confederation above them.'],
@@ -269,7 +270,7 @@ const COUNTRIES=[
            ['No line to government','Neither the federations, the unions nor the million companies connect directly to the government side. Everything routes through the confederation.']]},
 
   {id:'bndes',layer:4,lane:'gov',col:1,kind:'body',
-   name:'Development bank',role:'Lends against the missions',
+   name:'BNDES',alt:'National Bank for Economic and Social Development',role:'Lends against the missions',
    detail:[['Its full name','Banco Nacional de Desenvolvimento Econômico e Social, known as BNDES.'],
            ['Created','1952.'],
            ['Where its money comes from','A national workers support fund, the FAT, is its largest single source, at about 52 per cent of funding sources at the end of 2025. The rest is Treasury, government funds, external borrowing and bond issues.'],
@@ -277,7 +278,7 @@ const COUNTRIES=[
            ['Read the headline number carefully','The widely quoted R$653.2 billion across 428,000 projects is the total for the whole credit plan across every funder, not this bank alone. This bank is roughly half of it.'],
            ['A second role','It lent the money that originally built industry’s own training institutes.']]},
   {id:'finep',layer:4,lane:'gov',col:2,kind:'body',
-   name:'Innovation agency',role:'Funds research, fund was frozen',
+   name:'FINEP',alt:'Funder of Studies and Projects',role:'Funds research, fund was frozen',
    detail:[['Its full name','Financiadora de Estudos e Projetos, known as FINEP.'],
            ['Created','1967.'],
            ['Where its money comes from','The national science and technology fund, the FNDCT, filled by levies including oil, energy and mining royalties. This agency operates those resources.'],
@@ -285,7 +286,7 @@ const COUNTRIES=[
            ['What fixed it','Complementary Law 177 of 2021 bars any limit on executing FNDCT linked spending and bars parking its budget in a contingency reserve. It was sanctioned with vetoes, Congress overrode them in March 2021, and industry publicly campaigned for that override.'],
            ['Why this matters to the map','A legally earmarked fund was still not safe. It took a supermajority in Congress to make the money actually reachable.']]},
   {id:'embr',layer:4,lane:'gov',col:3,kind:'body',
-   name:'Applied research agency',role:'Industry asked for it',
+   name:'EMBRAPII',alt:'Brazilian Industrial Research and Innovation Company',role:'Industry asked for it',
    detail:[['Its full name','Empresa Brasileira de Pesquisa e Inovação Industrial, known as EMBRAPII.'],
            ['Created','2013, after industry lobbied for it.'],
            ['How it is funded','A ministry contract, plus money the company itself puts in.'],
@@ -857,7 +858,8 @@ function buildBoard(sp){
       return `<button class="node ${KINDCLASS[n.kind]||''}"
         data-node="${n.id}" aria-pressed="${selected===n.id}" style="grid-column:${gc}">
         ${hasRel?'<span class="rels" aria-hidden="true"></span>':''}
-        <span class="nm">${esc(n.name)}</span><span class="role">${esc(n.role)}</span></button>`;
+        <span class="nm">${esc(n.name)}</span>${n.alt?`<span class="alt">${esc(n.alt)}</span>`:''}
+        <span class="role">${esc(n.role)}</span></button>`;
     }).join('');
     const gap = absent[li] ? `<div class="absent"><span class="nm">Nothing sits here</span>
         <p>${esc(absent[li])}</p></div>` : '';
