@@ -69,6 +69,12 @@ something that took a while to get right.
    No hand-placed coordinates anywhere.
 9. **Calibri only, near-monochrome, white ground, one accent.** No em dashes anywhere
    in the content.
+9a. **Plain words, always.** No tax-policy or public-administration vocabulary on a
+   card or in a detail panel. A reader meeting the subject for the first time should
+   not have to look anything up. Say charge on wages, not levy. Say money that is
+   never repaid, not non-reimbursable. Say tool, not instrument. Say voted the cash,
+   not appropriated. Say a method with no body behind it, not mechanism. Where a
+   country's own term is unavoidable, gloss it in the same sentence.
 10. **Fits a laptop width without horizontal scrolling.**
 
 ## The layer 05 exception, now implemented
